@@ -1,0 +1,97 @@
+.sidebar {
+    width: 80px;
+    background: #f8fafc;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    box-shadow: 1px 0 8px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-logo {
+    position: relative;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.logo-d {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.05em;
+}
+
+.logo-star {
+    position: absolute;
+    top: -4px;
+    right: -12px;
+    font-size: 0.85rem;
+    color: #eab308;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    color: #2D9CDB;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.sidebar-nav-item:hover {
+    background: #e8f4fd;
+    color: #1a7cb8;
+}
+
+.sidebar-nav-item.active {
+    background: #dbeafe;
+    color: #2D9CDB;
+}
+
+/* Tooltip */
+.sidebar-nav-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 58px;
+    background: #1e293b;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
+    z-index: 200;
+}
+
+.sidebar-nav-item:hover::after {
+    opacity: 1;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-bottom: 0.5rem;
+    color: #94a3b8;
+}
