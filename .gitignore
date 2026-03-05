@@ -1,0 +1,51 @@
+# Node / Frontend
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+node_modules
+dist
+dist-ssr
+*.local
+lint-output.txt
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+.env
+.venv/
+venv/
+env/
+*.pyc
+
+# Database (dev SQLite)
+backend/*.db
+backend/**/*.db
+
+# ML model artifacts (too large for git — regenerate via train.py)
+backend/app/ml/models/*.pkl
+backend/app/ml/data/training.csv
+backend/app/ml/models/
+
+# Keep folder but not generated files
+!backend/app/ml/models/.gitkeep
+!backend/app/ml/data/.gitkeep
