@@ -1,0 +1,518 @@
+/* Main Dashboard Styles matching Figma */
+
+.dashboard-view {
+    padding: 0.5rem 1.5rem 2rem;
+    min-height: 100%;
+    background: #F0F4F8;
+}
+
+.breadcrumb {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.breadcrumb-link {
+    color: #64748b;
+}
+
+.dashboard-header {
+    margin-bottom: 1.25rem;
+}
+
+.dashboard-greeting {
+    font-size: 0.9rem;
+    color: #1976D2;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+}
+
+.dashboard-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #1565C0;
+    letter-spacing: -0.02em;
+}
+
+/* Top Row: 3 columns */
+.dashboard-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 0.9fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Bottom Row: 1 col left, wider chart right */
+.dashboard-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+/* Energy Production Card */
+.energy-production-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Radial Gauge */
+.radial-gauge-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.radial-gauge-center {
+    margin-top: -12px;
+    text-align: center;
+}
+
+.gauge-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1565C0;
+}
+
+.gauge-percent {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1565C0;
+    line-height: 1;
+}
+
+.gauge-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.production-stats {
+    display: flex;
+    width: 100%;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    gap: 1rem;
+}
+
+.production-stat {
+    flex: 1;
+}
+
+.production-stat-divider {
+    width: 1px;
+    background: #e2e8f0;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2D9CDB;
+}
+
+/* Plants Status */
+.plants-status-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.plants-status-body {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex: 1;
+}
+
+.plants-status-left {
+    flex: 0 0 auto;
+}
+
+.plants-total-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.plants-total-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+}
+
+.plants-status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.5rem;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-val {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.status-val.active {
+    color: #2D9CDB;
+}
+
+.status-val.alert {
+    color: #EB5757;
+}
+
+.status-val.partial {
+    color: #F2994A;
+}
+
+.status-val.expired {
+    color: #EB5757;
+}
+
+.status-lbl {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.plant-map {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+/* Net Zero */
+.net-zero-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.net-zero-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.nz-bubble {
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.nz-co2 {
+    width: 110px;
+    height: 110px;
+    background: #EBF9F1;
+    border: 2px solid #C6E9D5;
+}
+
+.nz-icon {
+    margin-bottom: 2px;
+}
+
+.nz-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2D9CDB;
+    line-height: 1;
+}
+
+.nz-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.nz-bubbles-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nz-trees {
+    width: 90px;
+    height: 90px;
+    background: #E8F6EE;
+    border: 2px solid #A9D9BC;
+}
+
+.nz-coal {
+    width: 80px;
+    height: 80px;
+    background: #EBEBEB;
+    border: 2px solid #C5C5C5;
+}
+
+.nz-value-sm {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.nz-label-sm {
+    font-size: 0.6rem;
+    color: #64748b;
+    text-align: center;
+}
+
+/* Devices Bar */
+.devices-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.device-bar-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.device-bar-track {
+    display: flex;
+    height: 18px;
+    border-radius: 9px;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.device-bar-segment {
+    border-radius: 3px;
+    transition: opacity 0.2s;
+}
+
+.device-bar-segment:hover {
+    opacity: 0.8;
+}
+
+.device-bar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.device-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.device-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* Energy Chart card */
+.energy-chart-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.energy-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.energy-tabs {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.energy-tab {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #64748b;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+}
+
+.energy-tab.active {
+    background: white;
+    color: #1e293b;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+}
+
+.energy-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.date-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #64748b;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.date-label {
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+}
+
+.period-tabs {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.period-tab {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+}
+
+.period-tab.active {
+    color: #2D9CDB;
+    font-weight: 600;
+}
+
+.download-btn {
+    background: #2D9CDB;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.energy-chart-body {
+    flex: 1;
+    display: flex;
+    position: relative;
+    min-height: 200px;
+}
+
+.chart-y-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+}
+
+.bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    flex: 1;
+    margin-left: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0;
+    height: 200px;
+    position: relative;
+}
+
+.bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    height: 100%;
+}
+
+.bar-rect {
+    width: 100%;
+    min-width: 6px;
+    border-radius: 3px 3px 0 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.bar-rect:hover {
+    opacity: 0.8;
+}
+
+.bar-label {
+    font-size: 0.6rem;
+    color: #94a3b8;
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+.bar-tooltip {
+    position: absolute;
+    top: -60px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.bar-tooltip-date {
+    color: #64748b;
+}
+
+.bar-tooltip-val {
+    color: #1565C0;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
