@@ -1,0 +1,250 @@
+/* Plants List View - Matching Figma Design */
+
+.plants-view {
+    padding: 0.5rem 1.5rem 2rem;
+    min-height: 100%;
+    background: #F0F4F8;
+}
+
+.breadcrumb {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.breadcrumb-link {
+    color: #64748b;
+    cursor: pointer;
+}
+
+.breadcrumb-link:hover {
+    color: #2D9CDB;
+}
+
+.breadcrumb-sep {
+    color: #94a3b8;
+    margin: 0 4px;
+}
+
+.breadcrumb-current {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.plants-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.plants-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2D9CDB;
+}
+
+.plants-count {
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: #64748b;
+}
+
+.plants-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1.5px solid #2D9CDB;
+    color: #2D9CDB;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    background: #EBF5FB;
+}
+
+.view-toggle {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 32px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.15s;
+}
+
+.view-btn.active {
+    background: white;
+    color: #2D9CDB;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+}
+
+.search-input {
+    padding: 8px 16px 8px 36px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    background: white;
+    outline: none;
+    width: 220px;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #2D9CDB;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+/* Plants Grid */
+.plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+/* Plant Card */
+.plant-card {
+    cursor: pointer;
+    padding: 1.25rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.plant-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.plant-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.plant-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2D9CDB;
+    margin-bottom: 2px;
+}
+
+.plant-updated {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.plant-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status-text {
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+/* Metrics row */
+.plant-metrics {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.plant-metric-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+
+.plant-metric-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2D9CDB;
+}
+
+.plant-metric-value.devices {
+    color: #2D9CDB;
+}
+
+/* Chart area */
+.plant-chart-area {
+    background: #F8FBFF;
+    border-radius: 8px;
+    padding: 8px 4px 4px;
+    border: 1px solid #EBF3FC;
+}
+
+.chart-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    padding-left: 4px;
+}
+
+.chart-x-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0 0;
+    font-size: 0.6rem;
+    color: #94a3b8;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #94a3b8;
+    padding: 3rem;
+    font-size: 0.95rem;
+}
