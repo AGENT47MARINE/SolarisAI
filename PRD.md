@@ -26,6 +26,26 @@
   - [x] Update Context Engine rules based on new views
   - [x] Build AI Fault Diagnosis mock dialogs in Alerts view
 
+- [ ] **Phase 5: Backend Integration (FastAPI)**
+  - [ ] Set up FastAPI server and router structure
+  - [ ] Implement database models (SQLAlchemy) for Plants, Devices, and Telemetry
+  - [ ] Create REST API endpoints (`/api/dashboard/metrics`, `/api/plants`, `/api/devices/{id}/telemetry`, `/api/alerts`)
+  - [ ] Build async Background Device Simulator to generate realistic telemetry
+
+- [ ] **Phase 6: Custom ML Model (XGBoost)**
+  - [ ] Generate 50,000 physics-informed synthetic telemetry samples
+  - [ ] Train XGBoost multi-class classifier for 8 fault classes (e.g., Overtemperature, Grid Overvoltage, IGBT Fault)
+  - [ ] Build inference pipeline (`/api/ai/diagnose`)
+  - [ ] Integrate actual ML predictions into frontend AI Fault Diagnosis Overlays
+
+---
+
+# 1.5 Future Works & Roadmap
+- **Real IoT Integration**: Swap the Python background simulator for a real MQTT broker to consume live inverter telemetry.
+- **Production Database**: Migrate from SQLite to PostgreSQL + TimescaleDB for massive time-series scaling.
+- **Expanded AI Features**: Integrate LLM capability to dynamically generate complex analytics reports directly from TimescaleDB queries.
+- **Role-Based Access Control**: Add user authentication and role management (Admin, Operator, Technician) to secure endpoints.
+
 ---
 
 # 2. Implementation Plan
