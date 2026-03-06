@@ -5,6 +5,7 @@ import MainDashboard from './views/MainDashboard';
 import PlantsList from './views/PlantsList';
 import PlantMap from './views/PlantMap';
 import InvertersList from './views/InvertersList';
+import PlantDetails from './views/PlantDetails';
 import DeviceDetails from './views/DeviceDetails';
 import SensorsList from './views/SensorsList';
 import Alerts from './views/Alerts';
@@ -21,6 +22,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<MainDashboard />} />
             <Route path="plants" element={<PlantsList />} />
+            <Route path="plants/:id" element={<PlantDetails />} />
             <Route path="map" element={<PlantMap />} />
             <Route path="inverters" element={<PlantsList />} />
             <Route path="inverters/:id" element={<DeviceDetails />} />

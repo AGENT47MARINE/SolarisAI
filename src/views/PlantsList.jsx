@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
-import { plantsData } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiService } from '../services/apiService';
+import { Loader2 } from 'lucide-react';
 import './PlantsList.css';
 
-// Mini Line Chart using SVG
+// Mini Line Chart using SVG - Adjusted to handle real data which can be small or empty
 const MiniLineChart = ({ data }) => {
     const width = 260;
     const height = 70;
+
+    // Fallback if data is empty or too small
+    if (!data || data.length < 2) {
+        return (
+            <div style={{ width: width, height: height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.8rem' }}>
+                Not enough data
+            </div>
+        );
+    }
+
     const max = Math.max(...data);
     const min = Math.min(...data);
+    const spread = (max - min) || 1; // prevent div by zero
 
     const points = data.map((val, i) => {
         const x = (i / (data.length - 1)) * width;
-        const y = height - ((val - min) / (max - min || 1)) * (height - 10) - 5;
+        const y = height - ((val - min) / spread) * (height - 10) - 5;
         return `${x},${y}`;
     }).join(' ');
 
@@ -35,9 +48,9 @@ const MiniLineChart = ({ data }) => {
                 strokeLinejoin="round"
             />
             {/* Y-axis labels approximate */}
-            <text x="2" y="12" fontSize="9" fill="#94a3b8">50</text>
-            <text x="2" y="42" fontSize="9" fill="#94a3b8">30</text>
-            <text x="2" y="68" fontSize="9" fill="#94a3b8">10</text>
+            <text x="2" y="12" fontSize="9" fill="#94a3b8">{max.toFixed(0)}</text>
+            <text x="2" y="42" fontSize="9" fill="#94a3b8">{((max + min) / 2).toFixed(0)}</text>
+            <text x="2" y="68" fontSize="9" fill="#94a3b8">{min.toFixed(0)}</text>
         </svg>
     );
 };
@@ -56,7 +69,7 @@ const PlantCard = ({ plant, onClick }) => {
             <div className="plant-card-header">
                 <div>
                     <div className="plant-name">{plant.name}</div>
-                    <div className="plant-updated">{plant.lastUpdated}</div>
+                    <div className="plant-updated">{plant.last_updated}</div>
                 </div>
                 <div className="plant-status-badge">
                     <span className="status-dot" style={{ background: status.color }} />
@@ -67,26 +80,21 @@ const PlantCard = ({ plant, onClick }) => {
             <div className="plant-metrics">
                 <div className="plant-metric">
                     <div className="plant-metric-label">Today</div>
-                    <div className="plant-metric-value">{plant.todayGen}Kwh</div>
+                    <div className="plant-metric-value">{plant.today_gen}Kwh</div>
                 </div>
                 <div className="plant-metric">
                     <div className="plant-metric-label">Total</div>
-                    <div className="plant-metric-value">{plant.totalGen}Kwh</div>
+                    <div className="plant-metric-value">{plant.total_gen}Kwh</div>
                 </div>
                 <div className="plant-metric">
                     <div className="plant-metric-label">Devices</div>
-                    <div className="plant-metric-value devices">{plant.devices}</div>
+                    <div className="plant-metric-value devices">{plant.device_count}</div>
                 </div>
             </div>
 
             <div className="plant-chart-area">
-                <div className="chart-label">Active Power</div>
-                <MiniLineChart data={plant.chartData} />
-                <div className="chart-x-labels">
-                    {['00:00', '2:00', '3:00', '00:00', '2:00', '3:00', '2:00'].map((t, i) => (
-                        <span key={i}>{t}</span>
-                    ))}
-                </div>
+                <div className="chart-label">Active Power History</div>
+                <MiniLineChart data={plant.chart_data} />
             </div>
         </div>
     );
@@ -94,17 +102,39 @@ const PlantCard = ({ plant, onClick }) => {
 
 const PlantsList = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [viewMode, setViewMode] = useState('grid'); // grid or list
+    const [plants, setPlants] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    const filtered = plantsData.filter(p =>
+    useEffect(() => {
+        apiService.getPlants()
+            .then(data => {
+                setPlants(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Failed to fetch plants", err);
+                setLoading(false);
+            });
+    }, []);
+
+    const filtered = plants.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    if (loading) {
+        return (
+            <div className="view-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+                <Loader2 className="spin" size={48} color="var(--primary)" />
+            </div>
+        );
+    }
 
     return (
         <div className="plants-view">
             {/* Breadcrumb */}
             <div className="breadcrumb">
-                <span className="breadcrumb-link">Dashboard</span>
+                <span className="breadcrumb-link" onClick={() => navigate('/dashboard')}>Dashboard</span>
                 <span className="breadcrumb-sep"> / </span>
                 <span className="breadcrumb-current">Plants</span>
             </div>
@@ -112,7 +142,7 @@ const PlantsList = () => {
             {/* Header */}
             <div className="plants-header">
                 <h1 className="plants-title">
-                    Plants <span className="plants-count">({plantsData.length})</span>
+                    Plants <span className="plants-count">({plants.length})</span>
                 </h1>
 
                 <div className="plants-controls">
@@ -123,10 +153,7 @@ const PlantsList = () => {
                         Filter
                     </button>
                     <div className="view-toggle">
-                        <button
-                            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                            onClick={() => setViewMode('grid')}
-                        >
+                        <button className="view-btn active">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                 <rect x="0" y="0" width="6" height="6" rx="1" />
                                 <rect x="10" y="0" width="6" height="6" rx="1" />
@@ -135,8 +162,8 @@ const PlantsList = () => {
                             </svg>
                         </button>
                         <button
-                            className={`view-btn ${viewMode === 'map' ? 'active' : ''}`}
-                            onClick={() => setViewMode('map')}
+                            className="view-btn"
+                            onClick={() => navigate('/map')}
                         >
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                 <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
@@ -151,7 +178,7 @@ const PlantsList = () => {
                         </svg>
                         <input
                             type="text"
-                            placeholder="Search Devices"
+                            placeholder="Search Plants"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             className="search-input"
@@ -166,7 +193,7 @@ const PlantsList = () => {
                     <PlantCard
                         key={plant.id}
                         plant={plant}
-                        onClick={() => { }}
+                        onClick={() => navigate(`/plants/${plant.id}`)}
                     />
                 ))}
                 {filtered.length === 0 && (

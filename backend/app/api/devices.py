@@ -20,6 +20,14 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
     ) for d in devices]
 
 
+@router.get("/{device_id}", response_model=DeviceSummary)
+async def get_device(device_id: str, db: AsyncSession = Depends(get_db)):
+    device = await db.get(Device, device_id)
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    return device
+
+
 @router.get("/{device_id}/telemetry", response_model=list[TelemetryReading])
 async def get_telemetry(
     device_id: str,
