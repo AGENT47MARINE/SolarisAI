@@ -93,3 +93,49 @@ class Alert(Base):
 
     device: Mapped["Device"] = relationship("Device", back_populates="alerts")
     plant: Mapped["Plant"] = relationship("Plant", back_populates="alerts")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    hashed_pw: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(String(20), default="operator")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class VoiceSession(Base):
+    __tablename__ = "voice_sessions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    last_active: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
+class NavEvent(Base):
+    __tablename__ = "nav_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    session_id: Mapped[str] = mapped_column(String, nullable=True)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    from_view: Mapped[str] = mapped_column(String(100), default="")
+    to_view: Mapped[str] = mapped_column(String(100), default="")
+    intent: Mapped[str] = mapped_column(String(50), default="")
+    transcript: Mapped[str] = mapped_column(Text, default="")
+    suggestion_shown: Mapped[bool] = mapped_column(Boolean, default=False)
+    suggestion_accepted: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ModelVersion(Base):
+    __tablename__ = "model_versions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    model_name: Mapped[str] = mapped_column(String(100))
+    version: Mapped[str] = mapped_column(String(20))
+    artifact_uri: Mapped[str] = mapped_column(Text, default="")
+    metrics_json: Mapped[str] = mapped_column(Text, default="{}")
+    promoted_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)

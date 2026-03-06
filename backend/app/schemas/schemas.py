@@ -105,6 +105,8 @@ class DiagnoseRequest(BaseModel):
 
 
 class DiagnoseResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     fault_class: str
     confidence: float
     root_cause: str

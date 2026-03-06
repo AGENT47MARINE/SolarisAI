@@ -1,0 +1,48 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: cd backend && pip install -r requirements.txt
+      - name: Train ML model (smoke test)
+        run: cd backend && python -m app.ml.train
+      - name: Verify backend starts
+        run: |
+          cd backend
+          timeout 10 uvicorn main:app --port 8000 &
+          sleep 5
+          curl -f http://localhost:8000/api/health || exit 1
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  docker-build:
+    needs: [backend-test, frontend-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image
+        run: docker build -t solarisai-backend:${{ github.sha }} ./backend
+      - name: Build frontend image
+        run: docker build -t solarisai-frontend:${{ github.sha }} -f Dockerfile.frontend .
