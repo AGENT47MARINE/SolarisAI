@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutGrid, SolarPanel, Monitor, Signal, LogOut } from 'lucide-react';
 import './Sidebar.css';
 
@@ -64,6 +64,8 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="sidebar">
             {/* Logo */}
@@ -88,7 +90,11 @@ const Sidebar = () => {
 
             {/* Logout at bottom */}
             <div className="sidebar-footer">
-                <button className="sidebar-nav-item" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <button
+                    className="sidebar-nav-item"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    onClick={() => navigate('/')}
+                >
                     <LogOut size={20} />
                 </button>
             </div>

@@ -1,15 +1,33 @@
-import React from 'react';
-import { invertersData, sensorsData } from '../data/mockData';
-import { Server, Activity, AlertTriangle, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Server, Activity, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
+import { apiService } from '../services/apiService';
 
 const PlantMap = () => {
-    // Hardcoded visual positioning for the "Digital Twin" illusion
-    // In a real app, these would come from X/Y coordinates in the telemetry data
+    const [devices, setDevices] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        apiService.getDevices()
+            .then(data => {
+                setDevices(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Failed to fetch devices for map", err);
+                setLoading(false);
+            });
+    }, []);
+
+    const inverters = devices.filter(d => d.category === 'inverter');
+    const sensors = devices.filter(d => d.category !== 'inverter');
 
     const getStatusColor = (status) => {
         switch (status) {
+            case 'alert':
             case 'critical': return 'var(--status-critical)';
+            case 'partially-active':
             case 'warning': return 'var(--status-warning)';
+            case 'active':
             case 'normal':
             default: return 'var(--status-normal)';
         }
@@ -17,12 +35,23 @@ const PlantMap = () => {
 
     const getStatusIcon = (status) => {
         switch (status) {
+            case 'alert':
             case 'critical': return <AlertTriangle size={16} color="white" />;
+            case 'partially-active':
             case 'warning': return <AlertTriangle size={16} color="white" />;
+            case 'active':
             case 'normal':
             default: return <CheckCircle size={16} color="white" />;
         }
     };
+
+    if (loading) {
+        return (
+            <div className="view-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+                <Loader2 className="spin" size={48} color="var(--primary)" />
+            </div>
+        );
+    }
 
     return (
         <div className="view-container">
@@ -59,8 +88,8 @@ const PlantMap = () => {
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
 
                     {/* Generating Map Nodes from data */}
-                    {invertersData.map((inv, index) => {
-                        // Fake coordinates
+                    {inverters.map((inv, index) => {
+                        // Fake coordinates based on index to spread them out
                         const top = `${20 + (index * 20)}%`;
                         const left = `${15 + (index % 2 * 30)}%`;
 
@@ -74,28 +103,27 @@ const PlantMap = () => {
                             }}>
                                 <div style={{
                                     width: '48px', height: '48px',
-                                    background: getStatusColor(inv.telemetry.status),
+                                    background: getStatusColor(inv.status),
                                     borderRadius: '12px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    boxShadow: inv.telemetry.status !== 'normal' ? `0 0 15px ${getStatusColor(inv.telemetry.status)}` : 'var(--shadow-sm)',
+                                    boxShadow: inv.status !== 'active' ? `0 0 15px ${getStatusColor(inv.status)}` : 'var(--shadow-sm)',
                                     marginBottom: '8px',
                                     color: 'white'
                                 }}>
                                     <Server size={24} />
                                 </div>
                                 <div style={{ background: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    {getStatusIcon(inv.telemetry.status)}
-                                    {inv.deviceName}
+                                    {getStatusIcon(inv.status)}
+                                    {inv.device_name}
                                 </div>
                             </div>
                         );
                     })}
 
-                    {sensorsData.map((sensor, index) => {
+                    {sensors.map((sensor, index) => {
                         // Fake coordinates
                         const top = `${30 + (index * 15)}%`;
                         const left = `${60 + (index % 2 * 20)}%`;
-                        const isDown = sensor.deviceName.includes("RADIATION"); // Fake down status for WMS
 
                         return (
                             <div key={sensor.id} style={{
@@ -107,7 +135,7 @@ const PlantMap = () => {
                             }}>
                                 <div style={{
                                     width: '40px', height: '40px',
-                                    background: isDown ? 'var(--status-warning)' : 'var(--primary-dark)',
+                                    background: getStatusColor(sensor.status),
                                     borderRadius: '50%',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     boxShadow: 'var(--shadow-sm)',
@@ -116,8 +144,9 @@ const PlantMap = () => {
                                 }}>
                                     <Activity size={20} />
                                 </div>
-                                <div style={{ background: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
-                                    {sensor.deviceName}
+                                <div style={{ background: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    {getStatusIcon(sensor.status)}
+                                    {sensor.device_name}
                                 </div>
                             </div>
                         );

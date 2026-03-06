@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { dashboardMetrics, plantsStatusData, energyGenerationData, totalDevicesData } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/apiService';
 import './MainDashboard.css';
 
 // --- Radial Gauge Component ---
@@ -7,9 +7,6 @@ const RadialGauge = ({ percentage, value, label }) => {
     const radius = 80;
     const strokeWidth = 18;
     const normalizedRadius = radius - strokeWidth / 2;
-    const circumference = Math.PI * normalizedRadius; // semicircle
-
-    // We use a clipped circle to make a semicircle gauge
     const segments = 16;
     const gapAngle = 3;
     const totalAngle = 180;
@@ -45,7 +42,6 @@ const RadialGauge = ({ percentage, value, label }) => {
                             key={i}
                             d={`M ${x1} ${y1} L ${x2} ${y2} A ${r2} ${r2} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${r1} ${r1} 0 0 0 ${x1} ${y1} Z`}
                             fill={isHighlight ? '#1565C0' : isActive ? '#2D9CDB' : '#D6EAF8'}
-                            rx="2"
                         />
                     );
                 })}
@@ -60,11 +56,8 @@ const RadialGauge = ({ percentage, value, label }) => {
 };
 
 // --- Dotted Map Component (Gujarat region) ---
-const PlantMap = ({ statusData }) => {
-    // Generate a dotted Gujarat-like region shape
-    const dots = [];
+const PlantMap = ({ metrics }) => {
     const mapDots = [
-        // Rough Gujarat shape coordinates (row, col)
         [0, 4], [0, 5], [1, 3], [1, 4], [1, 5], [1, 6], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7],
         [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9],
         [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8], [5, 9], [5, 10],
@@ -74,13 +67,12 @@ const PlantMap = ({ statusData }) => {
         [9, 3], [9, 4], [9, 5], [9, 6], [10, 4], [10, 5], [11, 5]
     ];
 
-    // Status plant markers (col * 14 + 8 = x, row * 14 + 8 = y approx)
     const markers = [
-        { row: 2, col: 5, color: '#EB5757' },  // Alert
-        { row: 4, col: 7, color: '#F2994A' },  // Partial
-        { row: 6, col: 3, color: '#2D9CDB' },  // Active
-        { row: 7, col: 6, color: '#2D9CDB' },  // Active
-        { row: 5, col: 9, color: '#F2994A' },  // Partial
+        { row: 2, col: 5, color: '#EB5757', active: metrics.alert_plants > 0 },
+        { row: 4, col: 7, color: '#F2994A', active: metrics.partially_active_plants > 0 },
+        { row: 6, col: 3, color: '#2D9CDB', active: metrics.active_plants > 0 },
+        { row: 7, col: 6, color: '#2D9CDB', active: metrics.active_plants > 1 },
+        { row: 5, col: 9, color: '#F2994A', active: metrics.partially_active_plants > 1 },
     ];
 
     return (
@@ -91,7 +83,7 @@ const PlantMap = ({ statusData }) => {
                     const y = row * 15 + 10;
                     return <circle key={i} cx={x} cy={y} r={3.5} fill="#C5D8E8" opacity="0.7" />;
                 })}
-                {markers.map((m, i) => {
+                {markers.filter(m => m.active).map((m, i) => {
                     const x = m.col * 15 + 10;
                     const y = m.row * 15 + 10;
                     return (
@@ -117,16 +109,16 @@ const NetZeroFootprint = ({ co2, coal, trees }) => {
                         <path d="M12 14v6M8 20h8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                 </div>
-                <div className="nz-value">{co2}</div>
+                <div className="nz-value">{co2 > 1000 ? `${(co2 / 1000).toFixed(2)}k` : co2}</div>
                 <div className="nz-label">co2 reduced</div>
             </div>
             <div className="nz-bubbles-right">
                 <div className="nz-bubble nz-trees">
-                    <div className="nz-value-sm">{trees}</div>
+                    <div className="nz-value-sm">{trees > 1000 ? `${(trees / 1000).toFixed(0)}K` : trees}</div>
                     <div className="nz-label-sm">Trees Planted</div>
                 </div>
                 <div className="nz-bubble nz-coal">
-                    <div className="nz-value-sm">{coal}</div>
+                    <div className="nz-value-sm">{coal} T</div>
                     <div className="nz-label-sm">Coal Saved</div>
                 </div>
             </div>
@@ -136,12 +128,12 @@ const NetZeroFootprint = ({ co2, coal, trees }) => {
 
 // --- Device Progress Bar ---
 const DeviceBar = ({ data }) => {
-    const total = data.mfm + data.wfm + data.slms + data.inverters;
+    const total = (data.mfm || 0) + (data.wms || 0) + (data.slms || 0) + (data.inverter || 0);
     const items = [
-        { label: 'MFM', count: data.mfm, color: '#2D9CDB', width: (data.mfm / total) * 100 },
-        { label: 'WFM', count: data.wfm, color: '#64B5F6', width: (data.wfm / total) * 100 },
-        { label: 'SLMS', count: data.slms, color: '#90CAF9', width: (data.slms / total) * 100 },
-        { label: 'Inverters', count: data.inverters, color: '#BBDEFB', width: (data.inverters / total) * 100 },
+        { label: 'MFM', count: data.mfm || 0, color: '#2D9CDB', width: ((data.mfm || 0) / total) * 100 },
+        { label: 'WMS', count: data.wms || 0, color: '#64B5F6', width: ((data.wms || 0) / total) * 100 },
+        { label: 'SLMS', count: data.slms || 0, color: '#90CAF9', width: ((data.slms || 0) / total) * 100 },
+        { label: 'Inverters', count: data.inverter || 0, color: '#BBDEFB', width: ((data.inverter || 0) / total) * 100 },
     ];
     return (
         <div className="device-bar-wrapper">
@@ -164,7 +156,7 @@ const DeviceBar = ({ data }) => {
 
 // --- Energy Chart ---
 const EnergyChart = ({ data }) => {
-    const max = Math.max(...data.map(d => d.value));
+    const max = data.length > 0 ? Math.max(...data.map(d => d.value)) : 100;
     const [activeTab, setActiveTab] = useState('energy');
     const [activePeriod, setActivePeriod] = useState('Yearly');
 
@@ -172,16 +164,10 @@ const EnergyChart = ({ data }) => {
         <div className="energy-chart-card card">
             <div className="energy-chart-header">
                 <div className="energy-tabs">
-                    <button
-                        className={`energy-tab ${activeTab === 'energy' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('energy')}
-                    >
+                    <button className={`energy-tab ${activeTab === 'energy' ? 'active' : ''}`} onClick={() => setActiveTab('energy')}>
                         Energy Generation
                     </button>
-                    <button
-                        className={`energy-tab ${activeTab === 'revenue' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('revenue')}
-                    >
+                    <button className={`energy-tab ${activeTab === 'revenue' ? 'active' : ''}`} onClick={() => setActiveTab('revenue')}>
                         Revenue
                     </button>
                 </div>
@@ -191,20 +177,11 @@ const EnergyChart = ({ data }) => {
                     <button className="date-nav">›</button>
                     <div className="period-tabs">
                         {['Monthly', 'Yearly', 'Lifetime'].map(p => (
-                            <button
-                                key={p}
-                                className={`period-tab ${activePeriod === p ? 'active' : ''}`}
-                                onClick={() => setActivePeriod(p)}
-                            >
+                            <button key={p} className={`period-tab ${activePeriod === p ? 'active' : ''}`} onClick={() => setActivePeriod(p)}>
                                 {p}
                             </button>
                         ))}
                     </div>
-                    <button className="download-btn">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 10L4 6h3V1h2v5h3L8 10zM13 13H3v-2H1v4h14v-4h-2v2z" />
-                        </svg>
-                    </button>
                 </div>
             </div>
             <div className="energy-chart-body">
@@ -221,13 +198,7 @@ const EnergyChart = ({ data }) => {
                                         <div className="bar-tooltip-val">{d.value}</div>
                                     </div>
                                 )}
-                                <div
-                                    className="bar-rect"
-                                    style={{
-                                        height: `${heightPct}%`,
-                                        background: isHighlight ? '#1565C0' : '#90CAF9',
-                                    }}
-                                />
+                                <div className="bar-rect" style={{ height: `${heightPct}%`, background: isHighlight ? '#1565C0' : '#90CAF9' }} />
                                 <div className="bar-label">{d.day}</div>
                             </div>
                         );
@@ -239,96 +210,108 @@ const EnergyChart = ({ data }) => {
 };
 
 const MainDashboard = () => {
+    const [metrics, setMetrics] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        apiService.getDashboardMetrics()
+            .then(data => {
+                setMetrics(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Failed to fetch dashboard metrics:', err);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div className="loading-container">Loading Dashboard Metrics...</div>;
+    }
+
+    if (!metrics) {
+        return <div className="error-container">Failed to load system state. Please check if backend is running.</div>;
+    }
+
     return (
         <div className="dashboard-view">
-            {/* Breadcrumb */}
             <div className="breadcrumb">
                 <span className="breadcrumb-link">Dashboard</span>
             </div>
 
-            {/* Header */}
             <div className="dashboard-header">
                 <div>
-                    <div className="dashboard-greeting">Namaste, {dashboardMetrics.userName}!</div>
+                    <div className="dashboard-greeting">Namaste, Operator!</div>
                     <div className="dashboard-title">Solar Performance Overview</div>
                 </div>
             </div>
 
-            {/* Top Row: Energy Production | Plants Status | Net Zero */}
             <div className="dashboard-top-row">
-
-                {/* Left: Total Energy Production */}
                 <div className="card energy-production-card">
                     <div className="card-title">Total Energy Production</div>
                     <RadialGauge
-                        percentage={50.75}
-                        value={20}
+                        percentage={metrics.efficiency_pct}
+                        value={metrics.today_production_kwh}
                         label="Today's generation"
                     />
                     <div className="production-stats">
                         <div className="production-stat">
                             <div className="stat-label">Total Production</div>
-                            <div className="stat-value">{(dashboardMetrics.totalProduction).toFixed(1)} kWh</div>
+                            <div className="stat-value">{metrics.total_production_kwh.toLocaleString()} kWh</div>
                         </div>
                         <div className="production-stat-divider" />
                         <div className="production-stat">
                             <div className="stat-label">Total Capacity</div>
-                            <div className="stat-value">{(dashboardMetrics.totalCapacity).toFixed(1)} kWh</div>
+                            <div className="stat-value">{metrics.total_capacity_kwp.toLocaleString()} kWp</div>
                         </div>
                     </div>
                 </div>
 
-                {/* Mid: Plants Status */}
                 <div className="card plants-status-card">
                     <div className="card-title">Plants Status</div>
                     <div className="plants-status-body">
                         <div className="plants-status-left">
-                            <div className="plants-total-count">{plantsStatusData.total}</div>
+                            <div className="plants-total-count">{metrics.total_plants}</div>
                             <div className="plants-total-label">Total Plants</div>
                             <div className="plants-status-grid">
                                 <div className="status-item">
-                                    <span className="status-val active">{plantsStatusData.active}</span>
+                                    <span className="status-val active">{metrics.active_plants}</span>
                                     <span className="status-lbl">Active</span>
                                 </div>
                                 <div className="status-item">
-                                    <span className="status-val alert">{plantsStatusData.alert}</span>
+                                    <span className="status-val alert">{metrics.alert_plants}</span>
                                     <span className="status-lbl">Alert</span>
                                 </div>
                                 <div className="status-item">
-                                    <span className="status-val partial">{plantsStatusData.partiallyActive}</span>
+                                    <span className="status-val partial">{metrics.partially_active_plants}</span>
                                     <span className="status-lbl">Partially Active</span>
                                 </div>
                                 <div className="status-item">
-                                    <span className="status-val expired">{plantsStatusData.expired}</span>
+                                    <span className="status-val expired">{metrics.expired_plants}</span>
                                     <span className="status-lbl">Expired</span>
                                 </div>
                             </div>
                         </div>
-                        <PlantMap statusData={plantsStatusData} />
+                        <PlantMap metrics={metrics} />
                     </div>
                 </div>
 
-                {/* Right: Net Zero Footprint */}
                 <div className="card net-zero-card">
                     <div className="card-title">Net Zero Footprint</div>
                     <NetZeroFootprint
-                        co2="1.03k"
-                        coal="1.4 T"
-                        trees="155K"
+                        co2={metrics.co2_reduced_tons}
+                        coal={metrics.coal_saved_tons}
+                        trees={metrics.trees_planted}
                     />
                 </div>
             </div>
 
-            {/* Bottom Row: Total Devices | Energy Chart */}
             <div className="dashboard-bottom-row">
-                {/* Left: Total Devices */}
                 <div className="card devices-card">
                     <div className="card-title">Total Devices</div>
-                    <DeviceBar data={totalDevicesData} />
+                    <DeviceBar data={metrics.device_breakdown} />
                 </div>
-
-                {/* Right: Energy Generation Chart */}
-                <EnergyChart data={energyGenerationData} />
+                <EnergyChart data={metrics.energy_chart} />
             </div>
         </div>
     );

@@ -62,6 +62,35 @@ class TelemetryReading(BaseModel):
         from_attributes = True
 
 
+# ── Advanced Analytics ───────────────────────────────────────────────────────
+class CTAnalysisData(BaseModel):
+    time: datetime
+    phase_a: float
+    phase_b: float
+    phase_c: float
+
+    class Config:
+        from_attributes = True
+
+class VoltageGridData(BaseModel):
+    v_r: float
+    v_y: float
+    v_b: float
+    v_ry: float
+    v_yb: float
+    v_br: float
+    freq: float
+    pf_r: float
+    pf_y: float
+    pf_b: float
+    i_r: float
+    i_y: float
+    i_b: float
+
+    class Config:
+        from_attributes = True
+
+
 # ── Alert ────────────────────────────────────────────────────────────────────
 class AlertOut(BaseModel):
     id: int

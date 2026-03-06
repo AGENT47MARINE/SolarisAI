@@ -5,8 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
 from app.models.models import Device, Telemetry
-from app.schemas.schemas import DeviceSummary, TelemetryReading
+from app.schemas.schemas import DeviceSummary, TelemetryReading, CTAnalysisData, VoltageGridData
 from datetime import datetime, timedelta
+import math
 
 router = APIRouter(prefix="/api/devices", tags=["Devices"])
 
@@ -66,3 +67,55 @@ async def get_latest_telemetry(device_id: str, db: AsyncSession = Depends(get_db
     if not row:
         raise HTTPException(status_code=404, detail="No telemetry data yet")
     return row
+
+@router.get("/{device_id}/ct-analysis", response_model=list[CTAnalysisData])
+async def get_ct_analysis(
+    device_id: str,
+    limit: int = Query(default=24, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    rows = (
+        await db.execute(
+            select(Telemetry)
+            .where(Telemetry.device_id == device_id)
+            .order_by(Telemetry.time.desc())
+            .limit(limit)
+        )
+    ).scalars().all()
+    rows = list(reversed(rows))
+    return [CTAnalysisData(
+        time=r.time,
+        phase_a=r.current_a,
+        phase_b=r.current_b,
+        phase_c=r.current_c
+    ) for r in rows]
+
+
+@router.get("/{device_id}/voltage-grid", response_model=VoltageGridData)
+async def get_voltage_grid(device_id: str, db: AsyncSession = Depends(get_db)):
+    row = (
+        await db.execute(
+            select(Telemetry)
+            .where(Telemetry.device_id == device_id)
+            .order_by(Telemetry.time.desc())
+            .limit(1)
+        )
+    ).scalars().first()
+    if not row:
+        raise HTTPException(status_code=404, detail="No telemetry data yet")
+    
+    return VoltageGridData(
+        v_r=round(row.voltage_ab / math.sqrt(3), 2) if row.voltage_ab else 230.4,
+        v_y=round(row.voltage_bc / math.sqrt(3), 2) if row.voltage_bc else 229.8,
+        v_b=round(row.voltage_ac / math.sqrt(3), 2) if row.voltage_ac else 231.1,
+        v_ry=row.voltage_ab,
+        v_yb=row.voltage_bc,
+        v_br=row.voltage_ac,
+        freq=row.frequency,
+        pf_r=0.99,
+        pf_y=0.98,
+        pf_b=0.99,
+        i_r=row.current_a,
+        i_y=row.current_b,
+        i_b=row.current_c
+    )
