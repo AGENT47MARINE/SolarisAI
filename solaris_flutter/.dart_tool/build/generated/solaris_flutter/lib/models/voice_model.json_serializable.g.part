@@ -1,0 +1,55 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+VoiceCommandResponse _$VoiceCommandResponseFromJson(
+        Map<String, dynamic> json) =>
+    VoiceCommandResponse(
+      sessionId: json['session_id'] as String,
+      transcript: json['transcript'] as String,
+      intent: json['intent'] as String,
+      confidence: (json['confidence'] as num).toDouble(),
+      navigationAction: NavigationAction.fromJson(
+          json['navigation_action'] as Map<String, dynamic>),
+      suggestions: (json['suggestions'] as List<dynamic>)
+          .map((e) => Suggestion.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      latencyMs: (json['latency_ms'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$VoiceCommandResponseToJson(
+        VoiceCommandResponse instance) =>
+    <String, dynamic>{
+      'session_id': instance.sessionId,
+      'transcript': instance.transcript,
+      'intent': instance.intent,
+      'confidence': instance.confidence,
+      'navigation_action': instance.navigationAction.toJson(),
+      'suggestions': instance.suggestions.map((e) => e.toJson()).toList(),
+      'latency_ms': instance.latencyMs,
+    };
+
+NavigationAction _$NavigationActionFromJson(Map<String, dynamic> json) =>
+    NavigationAction(
+      action: json['action'] as String,
+      params: json['params'] as Map<String, dynamic>,
+    );
+
+Map<String, dynamic> _$NavigationActionToJson(NavigationAction instance) =>
+    <String, dynamic>{
+      'action': instance.action,
+      'params': instance.params,
+    };
+
+Suggestion _$SuggestionFromJson(Map<String, dynamic> json) => Suggestion(
+      view: json['view'] as String,
+      label: json['label'] as String,
+      probability: (json['probability'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$SuggestionToJson(Suggestion instance) =>
+    <String, dynamic>{
+      'view': instance.view,
+      'label': instance.label,
+      'probability': instance.probability,
+    };

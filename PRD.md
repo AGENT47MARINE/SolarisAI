@@ -51,7 +51,7 @@
 # 2. Implementation Plan
 
 ## Goal Description
-Build a web application prototype for a Voice AI Solar Dashboard that mirrors the real-world `aalok.dyulabs.co.in` monitoring system. It allows operators to monitor solar plant performance, receive contextual suggestions, and navigate using voice commands.
+Build a web application prototype for a Voice AI Solar Dashboard that mirrors real-world solar monitoring systems. It allows operators to monitor solar plant performance, receive contextual suggestions, and navigate using voice commands.
 
 ## Proposed Architecture
 - **Frontend Framework**: React using Vite

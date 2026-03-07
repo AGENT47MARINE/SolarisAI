@@ -1,0 +1,261 @@
+/* Alerts List View & AI Diagnosis Modal - Figma Dark Theme */
+
+.alerts-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.alerts-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.alerts-card {
+    background: var(--bg-card);
+    border: var(--border-glass);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.alert-row {
+    padding: 1.5rem;
+    border-bottom: var(--border-glass-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0);
+}
+
+.alert-row:last-child {
+    border-bottom: none;
+}
+
+.alert-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.alert-content-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.alert-icon-wrap {
+    margin-top: 4px;
+}
+
+.alert-device {
+    font-weight: 600;
+    color: var(--text-heading);
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+}
+
+.alert-msg {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-width: 600px;
+}
+
+.alert-content-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.alert-time {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.ai-diag-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    background: rgba(77, 166, 255, 0.1);
+    border-radius: 100px;
+    transition: all 0.2s;
+}
+
+.alert-row:hover .ai-diag-trigger {
+    background: rgba(77, 166, 255, 0.2);
+    box-shadow: 0 0 10px rgba(77, 166, 255, 0.2);
+}
+
+/* AI Diagnosis Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+}
+
+.ai-diag-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 650px;
+    background: var(--bg-panel);
+    border: var(--border-glass-light);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: var(--border-glass-light);
+    padding-bottom: 1.5rem;
+}
+
+.modal-title-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-icon-bg {
+    background: rgba(77, 166, 255, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(77, 166, 255, 0.3);
+    box-shadow: 0 0 15px rgba(77, 166, 255, 0.2);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-heading);
+    font-weight: 600;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: var(--border-glass);
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(235, 87, 87, 0.1);
+    color: #EB5757;
+    border-color: rgba(235, 87, 87, 0.3);
+}
+
+.modal-context {
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    border: inset 1px rgba(0, 0, 0, 0.5);
+}
+
+.section-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.context-text {
+    font-weight: 500;
+    color: var(--text-heading);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.modal-section {
+    margin-bottom: 1.5rem;
+}
+
+.section-label.primary {
+    color: var(--primary);
+}
+
+.section-label.success {
+    color: var(--status-normal);
+}
+
+.rca-text {
+    line-height: 1.6;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.recommendation-box {
+    font-family: var(--font-base);
+    line-height: 1.7;
+    color: var(--text-main);
+    white-space: pre-wrap;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    border: var(--border-glass-light);
+    border-left: 3px solid var(--status-normal);
+}
+
+.modal-footer {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-family: var(--font-base);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-md);
+}
+
+.action-btn:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 15px var(--primary-glow);
+    transform: translateY(-2px);
+}

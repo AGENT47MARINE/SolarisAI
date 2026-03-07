@@ -1,128 +1,173 @@
 import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import { invertersData, sensorsData } from '../data/mockData';
-import { Server, Activity, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Server, Activity } from 'lucide-react';
+import { renderToString } from 'react-dom/server';
+
+// Fix Leaflet's default icon path issues in React
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Helper to render Lucide React icons into HTML strings for Leaflet divIcons
+const createCustomIcon = (status, type) => {
+    let color = 'var(--status-normal)';
+    if (status === 'warning') color = 'var(--status-warning)';
+    if (status === 'critical') color = 'var(--status-critical)';
+
+    const iconHtml = renderToString(
+        <div style={{
+            backgroundColor: color,
+            color: 'white',
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+            border: '2px solid white'
+        }}>
+            {type === 'inverter' ? <Server size={18} /> : <Activity size={18} />}
+        </div>
+    );
+
+    return L.divIcon({
+        html: iconHtml,
+        className: 'custom-leaflet-icon',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
+    });
+};
+
+const getStateCoordinates = (location) => {
+    if (!location) return [20.59, 78.96]; // Default India center
+    const loc = location.toLowerCase();
+    if (loc.includes('gujarat')) return [23.16, 72.82];
+    if (loc.includes('rajasthan')) return [27.53, 71.91];
+    if (loc.includes('tamil nadu')) return [9.35, 78.40];
+    if (loc.includes('madhya pradesh')) return [24.48, 81.56];
+    if (loc.includes('karnataka')) return [14.10, 77.27];
+    return [20.59, 78.96]; // Default India center
+};
 
 const PlantMap = () => {
-    // Hardcoded visual positioning for the "Digital Twin" illusion
-    // In a real app, these would come from X/Y coordinates in the telemetry data
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'critical': return 'var(--status-critical)';
-            case 'warning': return 'var(--status-warning)';
-            case 'normal':
-            default: return 'var(--status-normal)';
-        }
-    };
-
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'critical': return <AlertTriangle size={16} color="white" />;
-            case 'warning': return <AlertTriangle size={16} color="white" />;
-            case 'normal':
-            default: return <CheckCircle size={16} color="white" />;
-        }
-    };
+    // Center at approximate India coordinates to view all states
+    const mapCenter = [22.0, 79.0];
 
     return (
-        <div className="view-container">
+        <div className="view-container animate-fade-in">
             <div className="page-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                <h1 className="page-title" style={{ color: 'var(--primary-dark)' }}>Digital Twin Plant Map</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Live spatial view of Goa Shipyard Ltd, Vasco</p>
+                <h1 className="page-title" style={{ color: 'var(--primary-dark)' }}>Live Operations Map</h1>
+                <p style={{ color: 'var(--text-muted)' }}>Interactive spatial view of devices across sites</p>
             </div>
 
-            <div className="card" style={{ height: '600px', position: 'relative', overflow: 'hidden', background: '#f8fafc', border: '1px solid #cbd5e1', marginTop: '1rem' }}>
+            <div className="card" style={{ height: '650px', padding: 0, overflow: 'hidden', position: 'relative' }}>
+                <MapContainer center={mapCenter} zoom={5} style={{ height: '100%', width: '100%', zIndex: 0 }}>
+                    {/* Map tiles - OpenStreetMap */}
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    />
 
-                {/* Background Grid Pattern */}
-                <div style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundImage: 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)',
-                    backgroundSize: '40px 40px',
-                    opacity: 0.5
-                }} />
-
-                {/* Legend */}
-                <div style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', padding: '12px', borderRadius: '8px', boxShadow: 'var(--shadow-sm)', zIndex: 10 }}>
-                    <h4 style={{ fontSize: '0.875rem', marginBottom: '8px' }}>Legend</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', marginBottom: '4px' }}>
-                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--status-normal)' }}></div> Normal
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', marginBottom: '4px' }}>
-                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--status-warning)' }}></div> Warning
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--status-critical)' }}></div> Fault/Offline
-                    </div>
-                </div>
-
-                {/* Nodes Rendering */}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-
-                    {/* Generating Map Nodes from data */}
+                    {/* Rendering Inverters */}
                     {invertersData.map((inv, index) => {
-                        // Fake coordinates
-                        const top = `${20 + (index * 20)}%`;
-                        const left = `${15 + (index % 2 * 30)}%`;
+                        const baseCoord = getStateCoordinates(inv.location);
+                        // Spread the nodes realistically over a small area
+                        const offsetLat = index * 0.1 * (index % 2 === 0 ? 1 : -1);
+                        const offsetLng = index * 0.1 * (index % 3 === 0 ? 1 : -1);
+                        const position = [baseCoord[0] + offsetLat, baseCoord[1] + offsetLng];
+
+                        const icon = createCustomIcon(inv.telemetry.status, 'inverter');
 
                         return (
-                            <div key={inv.id} style={{
-                                position: 'absolute',
-                                top, left,
-                                transform: 'translate(-50%, -50%)',
-                                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                                zIndex: 5
-                            }}>
-                                <div style={{
-                                    width: '48px', height: '48px',
-                                    background: getStatusColor(inv.telemetry.status),
-                                    borderRadius: '12px',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    boxShadow: inv.telemetry.status !== 'normal' ? `0 0 15px ${getStatusColor(inv.telemetry.status)}` : 'var(--shadow-sm)',
-                                    marginBottom: '8px',
-                                    color: 'white'
-                                }}>
-                                    <Server size={24} />
-                                </div>
-                                <div style={{ background: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    {getStatusIcon(inv.telemetry.status)}
-                                    {inv.deviceName}
-                                </div>
-                            </div>
+                            <Marker key={`inv-${inv.id}`} position={position} icon={icon}>
+                                <Tooltip direction="top" offset={[0, -20]} opacity={1}>
+                                    <strong>{inv.deviceName}</strong><br />
+                                    <span style={{ color: 'gray' }}>{inv.location}</span>
+                                </Tooltip>
+                                <Popup>
+                                    <div style={{ minWidth: '150px' }}>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#334155' }}>{inv.deviceName}</h4>
+                                        <div style={{ marginBottom: '6px', fontSize: '0.85rem' }}>
+                                            Status: <span style={{
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                color: inv.telemetry.status === 'normal' ? 'var(--status-normal)' :
+                                                    inv.telemetry.status === 'warning' ? 'var(--status-warning)' : 'var(--status-critical)'
+                                            }}>
+                                                {inv.telemetry.status}
+                                            </span>
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem' }}>
+                                            Power: <strong>{inv.telemetry.activePower} kW</strong>
+                                        </div>
+                                    </div>
+                                </Popup>
+                            </Marker>
                         );
                     })}
 
+                    {/* Rendering Sensors */}
                     {sensorsData.map((sensor, index) => {
-                        // Fake coordinates
-                        const top = `${30 + (index * 15)}%`;
-                        const left = `${60 + (index % 2 * 20)}%`;
-                        const isDown = sensor.deviceName.includes("RADIATION"); // Fake down status for WMS
+                        // Simulate warning on some sensors
+                        const isDown = sensor.deviceName.includes("RADIATION");
+                        const status = isDown ? 'warning' : 'normal';
+
+                        const baseCoord = getStateCoordinates(sensor.location);
+                        // Spread differently than inverters
+                        const offsetLat = (index + 2) * 0.08 * (index % 2 === 0 ? -1 : 1);
+                        const offsetLng = (index + 2) * 0.08 * (index % 3 === 0 ? -1 : 1);
+                        const position = [baseCoord[0] + offsetLat, baseCoord[1] + offsetLng];
+
+                        const icon = createCustomIcon(status, 'sensor');
 
                         return (
-                            <div key={sensor.id} style={{
-                                position: 'absolute',
-                                top, left,
-                                transform: 'translate(-50%, -50%)',
-                                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                                zIndex: 5
-                            }}>
-                                <div style={{
-                                    width: '40px', height: '40px',
-                                    background: isDown ? 'var(--status-warning)' : 'var(--primary-dark)',
-                                    borderRadius: '50%',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    boxShadow: 'var(--shadow-sm)',
-                                    marginBottom: '8px',
-                                    color: 'white'
-                                }}>
-                                    <Activity size={20} />
-                                </div>
-                                <div style={{ background: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, boxShadow: 'var(--shadow-sm)' }}>
-                                    {sensor.deviceName}
-                                </div>
-                            </div>
+                            <Marker key={`sen-${sensor.id}`} position={position} icon={icon}>
+                                <Tooltip direction="top" offset={[0, -20]} opacity={1}>
+                                    <strong>{sensor.deviceName || sensor.device_name}</strong><br />
+                                    <span style={{ color: 'gray' }}>{sensor.location}</span>
+                                </Tooltip>
+                                <Popup>
+                                    <div style={{ minWidth: '140px' }}>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#334155' }}>{sensor.deviceName || sensor.device_name}</h4>
+                                        <div style={{ fontSize: '0.85rem', marginBottom: '4px' }}>
+                                            Type: <strong>{sensor.category.toUpperCase()}</strong>
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: '#64748B' }}>
+                                            Mfg: {sensor.manufacturer}
+                                        </div>
+                                    </div>
+                                </Popup>
+                            </Marker>
                         );
                     })}
+                </MapContainer>
 
+                {/* Map Legend Overlay */}
+                <div style={{
+                    position: 'absolute', top: '20px', right: '20px',
+                    background: 'rgba(255, 255, 255, 0.95)', padding: '16px',
+                    borderRadius: '12px', boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                    zIndex: 1000, border: '1px solid #e2e8f0',
+                    backdropFilter: 'blur(8px)'
+                }}>
+                    <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', color: '#0F172A' }}>Device Health</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', marginBottom: '10px', color: '#334155' }}>
+                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--status-normal)', flexShrink: 0 }}></div> Normal Ops
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', marginBottom: '10px', color: '#334155' }}>
+                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--status-warning)', flexShrink: 0 }}></div> Warning / Degraded
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#334155' }}>
+                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'var(--status-critical)', flexShrink: 0 }}></div> Fault / Offline
+                    </div>
                 </div>
             </div>
         </div>

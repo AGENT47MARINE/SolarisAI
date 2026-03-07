@@ -1,8 +1,8 @@
-// Aalok Solar Dashboard - Mock Dataset matching Figma design
+// Solar Dashboard - Mock Dataset matching Figma design
 
 export const dashboardMetrics = {
     userName: "Dhruti",
-    siteName: "Aalok Solar Operations",
+    siteName: "Solar Operations",
     todayProduction: 20, // kWh shown in gauge
     totalProduction: 42800, // kWh
     totalCapacity: 42800, // kWp

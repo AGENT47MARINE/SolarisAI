@@ -1,132 +1,107 @@
-/* Main Dashboard Styles matching Figma */
+/* Main Dashboard Component Styles - Figma Dark Theme */
 
-.dashboard-view {
-    padding: 0.5rem 1.5rem 2rem;
-    min-height: 100%;
-    background: #F0F4F8;
-}
-
-.breadcrumb {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-bottom: 0.25rem;
-}
-
-.breadcrumb-link {
-    color: #64748b;
+.dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .dashboard-header {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
-.dashboard-greeting {
-    font-size: 0.9rem;
-    color: #1976D2;
-    font-weight: 500;
-    margin-bottom: 0.15rem;
-}
-
-.dashboard-title {
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: #1565C0;
-    letter-spacing: -0.02em;
-}
-
-/* Top Row: 3 columns */
+/* Layout Grids */
 .dashboard-top-row {
     display: grid;
-    grid-template-columns: 1fr 1.4fr 0.9fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    grid-template-columns: minmax(300px, 1fr) minmax(400px, 1.3fr) minmax(280px, 0.9fr);
+    gap: 1.5rem;
 }
 
-/* Bottom Row: 1 col left, wider chart right */
 .dashboard-bottom-row {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1rem;
+    grid-template-columns: minmax(300px, 1fr) 2.2fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 1rem;
-}
-
-/* Energy Production Card */
+/* Energy Production Card & Gauge */
 .energy-production-card {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
-/* Radial Gauge */
 .radial-gauge-wrapper {
     position: relative;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 1rem 0;
 }
 
 .radial-gauge-center {
-    margin-top: -12px;
+    margin-top: -24px;
     text-align: center;
+}
+
+.gauge-segment-active {
+    filter: drop-shadow(0 0 8px var(--primary-glow));
 }
 
 .gauge-value {
     font-size: 1.1rem;
-    font-weight: 600;
-    color: #1565C0;
+    font-weight: 500;
+    color: var(--primary-light);
 }
 
 .gauge-percent {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #1565C0;
+    color: var(--text-heading);
     line-height: 1;
+    margin: 4px 0;
 }
 
 .gauge-label {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-top: 2px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .production-stats {
     display: flex;
     width: 100%;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 1rem;
+    border-top: var(--border-glass);
+    margin-top: auto;
     padding-top: 1rem;
     gap: 1rem;
 }
 
 .production-stat {
     flex: 1;
+    text-align: center;
 }
 
 .production-stat-divider {
     width: 1px;
-    background: #e2e8f0;
+    background: var(--border-glass);
 }
 
 .stat-label {
     font-size: 0.75rem;
-    color: #64748b;
-    margin-bottom: 2px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 
 .stat-value {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: #2D9CDB;
+    color: var(--text-heading);
 }
 
-/* Plants Status */
+/* Plants Status Card */
 .plants-status-card {
     display: flex;
     flex-direction: column;
@@ -141,25 +116,26 @@
 
 .plants-status-left {
     flex: 0 0 auto;
+    min-width: 140px;
 }
 
 .plants-total-count {
-    font-size: 2rem;
+    font-size: 3rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-heading);
     line-height: 1;
 }
 
 .plants-total-label {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
 
 .plants-status-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem 1.5rem;
+    gap: 1rem;
 }
 
 .status-item {
@@ -168,38 +144,61 @@
 }
 
 .status-val {
-    font-size: 1.2rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 600;
 }
 
 .status-val.active {
-    color: #2D9CDB;
+    color: var(--status-normal);
 }
 
 .status-val.alert {
-    color: #EB5757;
+    color: var(--status-critical);
 }
 
 .status-val.partial {
-    color: #F2994A;
+    color: var(--status-warning);
 }
 
-.status-val.expired {
-    color: #EB5757;
+.status-val.inactive {
+    color: var(--status-inactive);
 }
 
 .status-lbl {
-    font-size: 0.72rem;
-    color: #64748b;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
 }
 
 .plant-map {
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
-/* Net Zero */
+@keyframes pulseMap {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+.marker-pulse {
+    animation: pulseMap 2s infinite;
+    transform-origin: center;
+}
+
+/* Net Zero Footprint Card */
 .net-zero-card {
     display: flex;
     flex-direction: column;
@@ -208,7 +207,7 @@
 .net-zero-wrapper {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     flex: 1;
     justify-content: center;
 }
@@ -219,66 +218,66 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: var(--border-glass-light);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 .nz-co2 {
-    width: 110px;
-    height: 110px;
-    background: #EBF9F1;
-    border: 2px solid #C6E9D5;
+    width: 130px;
+    height: 130px;
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1);
 }
 
 .nz-icon {
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .nz-value {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #2D9CDB;
+    color: var(--text-heading);
     line-height: 1;
 }
 
 .nz-label {
-    font-size: 0.65rem;
-    color: #64748b;
+    font-size: 0.75rem;
+    color: var(--text-muted);
     text-align: center;
+    margin-top: 4px;
 }
 
 .nz-bubbles-right {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .nz-trees {
     width: 90px;
     height: 90px;
-    background: #E8F6EE;
-    border: 2px solid #A9D9BC;
+    border-color: rgba(77, 166, 255, 0.2);
 }
 
 .nz-coal {
     width: 80px;
     height: 80px;
-    background: #EBEBEB;
-    border: 2px solid #C5C5C5;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nz-value-sm {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
 }
 
 .nz-label-sm {
-    font-size: 0.6rem;
-    color: #64748b;
-    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
 }
 
-/* Devices Bar */
+/* Total Devices Card */
 .devices-card {
     display: flex;
     flex-direction: column;
@@ -289,50 +288,56 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .device-bar-track {
     display: flex;
-    height: 18px;
-    border-radius: 9px;
+    height: 12px;
+    border-radius: 6px;
     overflow: hidden;
     gap: 2px;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .device-bar-segment {
-    border-radius: 3px;
-    transition: opacity 0.2s;
-}
-
-.device-bar-segment:hover {
-    opacity: 0.8;
+    border-radius: 2px;
+    transition: width 0.3s ease;
 }
 
 .device-bar-legend {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .device-legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
-    color: #64748b;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    padding: 6px 0;
+    border-bottom: var(--border-glass);
+}
+
+.device-legend-item:last-child {
+    border-bottom: none;
 }
 
 .device-legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 12px;
 }
 
-/* Energy Chart card */
-.energy-chart-card {
+.device-legend-label {
     flex: 1;
+}
+
+/* Energy Chart */
+.energy-chart-card {
     display: flex;
     flex-direction: column;
 }
@@ -341,127 +346,130 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
 .energy-tabs {
     display: flex;
     gap: 4px;
-    background: #f1f5f9;
-    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
     padding: 4px;
+    border: var(--border-glass);
 }
 
 .energy-tab {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 500;
-    color: #64748b;
-    font-family: 'Inter', sans-serif;
+    color: var(--text-muted);
     transition: all 0.2s;
 }
 
 .energy-tab.active {
-    background: white;
-    color: #1e293b;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    font-weight: 600;
+    background: var(--bg-card);
+    color: var(--text-heading);
+    box-shadow: var(--shadow-sm);
 }
 
 .energy-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.8rem;
-    color: #64748b;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-main);
 }
 
 .date-nav {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
-    color: #64748b;
-    padding: 0 4px;
-    line-height: 1;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.date-nav:hover {
+    color: var(--text-main);
 }
 
 .date-label {
     font-weight: 500;
-    color: #1e293b;
-    white-space: nowrap;
 }
 
 .period-tabs {
     display: flex;
-    background: #f1f5f9;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
     padding: 2px;
+    border: var(--border-glass);
+    margin: 0 8px;
 }
 
 .period-tab {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 4px 12px;
+    border-radius: 4px;
     font-size: 0.75rem;
-    color: #64748b;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
+    color: var(--text-muted);
 }
 
 .period-tab.active {
-    color: #2D9CDB;
-    font-weight: 600;
+    color: var(--primary);
+    background: rgba(77, 166, 255, 0.1);
 }
 
 .download-btn {
-    background: #2D9CDB;
-    color: white;
-    border: none;
+    background: var(--bg-card);
+    border: var(--border-glass);
+    color: var(--text-main);
     cursor: pointer;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.download-btn:hover {
+    background: var(--bg-card-hover);
 }
 
 .energy-chart-body {
     flex: 1;
     display: flex;
     position: relative;
-    min-height: 200px;
+    min-height: 220px;
 }
 
 .chart-y-label {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
-    font-size: 0.7rem;
-    color: #94a3b8;
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
 }
 
 .bars-container {
     display: flex;
     align-items: flex-end;
-    gap: 3px;
+    gap: 6px;
     flex: 1;
-    margin-left: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 0;
-    height: 200px;
+    margin-left: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 100%;
     position: relative;
+    padding-bottom: 1px;
 }
 
 .bar-item {
@@ -476,43 +484,45 @@
 
 .bar-rect {
     width: 100%;
-    min-width: 6px;
-    border-radius: 3px 3px 0 0;
-    transition: opacity 0.2s;
-    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.3s ease;
 }
 
 .bar-rect:hover {
-    opacity: 0.8;
+    filter: brightness(1.2);
 }
 
 .bar-label {
-    font-size: 0.6rem;
-    color: #94a3b8;
-    margin-top: 4px;
-    white-space: nowrap;
+    position: absolute;
+    bottom: -24px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
 }
 
 .bar-tooltip {
     position: absolute;
-    top: -60px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    white-space: nowrap;
+    top: -50px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(10px);
+    border: var(--border-glass);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-md);
     z-index: 10;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .bar-tooltip-date {
-    color: #64748b;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    margin-bottom: 2px;
 }
 
 .bar-tooltip-val {
-    color: #1565C0;
-    font-weight: 700;
-    font-size: 0.9rem;
+    color: var(--text-heading);
+    font-weight: 600;
 }

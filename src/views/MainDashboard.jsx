@@ -2,14 +2,8 @@ import React, { useState } from 'react';
 import { dashboardMetrics, plantsStatusData, energyGenerationData, totalDevicesData } from '../data/mockData';
 import './MainDashboard.css';
 
-// --- Radial Gauge Component ---
+// --- Radial Gauge Component (Updated for glassmorphism) ---
 const RadialGauge = ({ percentage, value, label }) => {
-    const radius = 80;
-    const strokeWidth = 18;
-    const normalizedRadius = radius - strokeWidth / 2;
-    const circumference = Math.PI * normalizedRadius; // semicircle
-
-    // We use a clipped circle to make a semicircle gauge
     const segments = 16;
     const gapAngle = 3;
     const totalAngle = 180;
@@ -40,11 +34,17 @@ const RadialGauge = ({ percentage, value, label }) => {
                     const isActive = i < activeSegments;
                     const isHighlight = i === activeSegments - 1;
 
+                    // Neon blue for active, subtle glass border for inactive
+                    let fill = 'rgba(255, 255, 255, 0.05)';
+                    if (isActive) fill = 'var(--primary)';
+                    if (isHighlight) fill = 'var(--primary-light)';
+
                     return (
                         <path
                             key={i}
                             d={`M ${x1} ${y1} L ${x2} ${y2} A ${r2} ${r2} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${r1} ${r1} 0 0 0 ${x1} ${y1} Z`}
-                            fill={isHighlight ? '#1565C0' : isActive ? '#2D9CDB' : '#D6EAF8'}
+                            fill={fill}
+                            className={isActive ? "gauge-segment-active" : ""}
                             rx="2"
                         />
                     );
@@ -59,12 +59,9 @@ const RadialGauge = ({ percentage, value, label }) => {
     );
 };
 
-// --- Dotted Map Component (Gujarat region) ---
+// --- Dotted Map Component (Updated colors) ---
 const PlantMap = ({ statusData }) => {
-    // Generate a dotted Gujarat-like region shape
-    const dots = [];
     const mapDots = [
-        // Rough Gujarat shape coordinates (row, col)
         [0, 4], [0, 5], [1, 3], [1, 4], [1, 5], [1, 6], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7],
         [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9],
         [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8], [5, 9], [5, 10],
@@ -74,13 +71,12 @@ const PlantMap = ({ statusData }) => {
         [9, 3], [9, 4], [9, 5], [9, 6], [10, 4], [10, 5], [11, 5]
     ];
 
-    // Status plant markers (col * 14 + 8 = x, row * 14 + 8 = y approx)
     const markers = [
-        { row: 2, col: 5, color: '#EB5757' },  // Alert
-        { row: 4, col: 7, color: '#F2994A' },  // Partial
-        { row: 6, col: 3, color: '#2D9CDB' },  // Active
-        { row: 7, col: 6, color: '#2D9CDB' },  // Active
-        { row: 5, col: 9, color: '#F2994A' },  // Partial
+        { row: 2, col: 5, color: 'var(--status-critical)' },
+        { row: 4, col: 7, color: 'var(--status-warning)' },
+        { row: 6, col: 3, color: 'var(--primary)' },
+        { row: 7, col: 6, color: 'var(--primary)' },
+        { row: 5, col: 9, color: 'var(--status-warning)' },
     ];
 
     return (
@@ -89,15 +85,15 @@ const PlantMap = ({ statusData }) => {
                 {mapDots.map(([row, col], i) => {
                     const x = col * 15 + 10;
                     const y = row * 15 + 10;
-                    return <circle key={i} cx={x} cy={y} r={3.5} fill="#C5D8E8" opacity="0.7" />;
+                    return <circle key={i} cx={x} cy={y} r={3.5} fill="rgba(255,255,255,0.15)" />;
                 })}
                 {markers.map((m, i) => {
                     const x = m.col * 15 + 10;
                     const y = m.row * 15 + 10;
                     return (
-                        <g key={i}>
-                            <circle cx={x} cy={y} r={7} fill={m.color} opacity="0.25" />
-                            <circle cx={x} cy={y} r={4} fill={m.color} />
+                        <g key={i} className="map-marker">
+                            <circle cx={x} cy={y} r={12} fill={m.color} opacity="0.2" className="marker-pulse" />
+                            <circle cx={x} cy={y} r={5} fill={m.color} />
                         </g>
                     );
                 })}
@@ -106,19 +102,19 @@ const PlantMap = ({ statusData }) => {
     );
 };
 
-// --- Net Zero Footprint Bubble Chart ---
+// --- Net Zero Footprint (Glassmorphism update) ---
 const NetZeroFootprint = ({ co2, coal, trees }) => {
     return (
         <div className="net-zero-wrapper">
             <div className="nz-bubble nz-co2">
                 <div className="nz-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2C7.6 2 4 5.6 4 10c0 2.9 1.6 5.5 4 7h8c2.4-1.5 4-4.1 4-7 0-4.4-3.6-8-8-8z" fill="#27AE60" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C7.6 2 4 5.6 4 10c0 2.9 1.6 5.5 4 7h8c2.4-1.5 4-4.1 4-7 0-4.4-3.6-8-8-8z" fill="var(--status-normal)" />
                         <path d="M12 14v6M8 20h8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                 </div>
                 <div className="nz-value">{co2}</div>
-                <div className="nz-label">co2 reduced</div>
+                <div className="nz-label">CO2 Reduced</div>
             </div>
             <div className="nz-bubbles-right">
                 <div className="nz-bubble nz-trees">
@@ -134,14 +130,14 @@ const NetZeroFootprint = ({ co2, coal, trees }) => {
     );
 };
 
-// --- Device Progress Bar ---
+// --- Device Progress Bar (Dark theme variables) ---
 const DeviceBar = ({ data }) => {
     const total = data.mfm + data.wfm + data.slms + data.inverters;
     const items = [
-        { label: 'MFM', count: data.mfm, color: '#2D9CDB', width: (data.mfm / total) * 100 },
-        { label: 'WFM', count: data.wfm, color: '#64B5F6', width: (data.wfm / total) * 100 },
-        { label: 'SLMS', count: data.slms, color: '#90CAF9', width: (data.slms / total) * 100 },
-        { label: 'Inverters', count: data.inverters, color: '#BBDEFB', width: (data.inverters / total) * 100 },
+        { label: 'MFM', count: data.mfm, color: 'var(--primary)', width: (data.mfm / total) * 100 },
+        { label: 'WFM', count: data.wfm, color: 'var(--primary-light)', width: (data.wfm / total) * 100 },
+        { label: 'SLMS', count: data.slms, color: 'rgba(77, 166, 255, 0.5)', width: (data.slms / total) * 100 },
+        { label: 'Inverters', count: data.inverters, color: 'var(--text-muted)', width: (data.inverters / total) * 100 },
     ];
     return (
         <div className="device-bar-wrapper">
@@ -169,7 +165,7 @@ const EnergyChart = ({ data }) => {
     const [activePeriod, setActivePeriod] = useState('Yearly');
 
     return (
-        <div className="energy-chart-card card">
+        <div className="card energy-chart-card">
             <div className="energy-chart-header">
                 <div className="energy-tabs">
                     <button
@@ -208,7 +204,7 @@ const EnergyChart = ({ data }) => {
                 </div>
             </div>
             <div className="energy-chart-body">
-                <div className="chart-y-label">Kwh</div>
+                <div className="chart-y-label">kWh</div>
                 <div className="bars-container">
                     {data.map((d, i) => {
                         const heightPct = (d.value / max) * 100;
@@ -217,7 +213,7 @@ const EnergyChart = ({ data }) => {
                             <div key={i} className="bar-item">
                                 {isHighlight && (
                                     <div className="bar-tooltip">
-                                        <div className="bar-tooltip-date">20/5/2025</div>
+                                        <div className="bar-tooltip-date">20/5/2026</div>
                                         <div className="bar-tooltip-val">{d.value}</div>
                                     </div>
                                 )}
@@ -225,7 +221,8 @@ const EnergyChart = ({ data }) => {
                                     className="bar-rect"
                                     style={{
                                         height: `${heightPct}%`,
-                                        background: isHighlight ? '#1565C0' : '#90CAF9',
+                                        background: isHighlight ? 'var(--primary)' : 'rgba(77, 166, 255, 0.3)',
+                                        boxShadow: isHighlight ? '0 0 10px rgba(77,166,255,0.4)' : 'none'
                                     }}
                                 />
                                 <div className="bar-label">{d.day}</div>
@@ -240,17 +237,11 @@ const EnergyChart = ({ data }) => {
 
 const MainDashboard = () => {
     return (
-        <div className="dashboard-view">
-            {/* Breadcrumb */}
-            <div className="breadcrumb">
-                <span className="breadcrumb-link">Dashboard</span>
-            </div>
-
-            {/* Header */}
+        <div className="dashboard-content">
             <div className="dashboard-header">
                 <div>
-                    <div className="dashboard-greeting">Namaste, {dashboardMetrics.userName}!</div>
-                    <div className="dashboard-title">Solar Performance Overview</div>
+                    <h1 className="page-title">Solar Performance Overview</h1>
+                    <p className="page-subtitle">Namaste, {dashboardMetrics.userName}! Here's your portfolio summary.</p>
                 </div>
             </div>
 
@@ -259,11 +250,11 @@ const MainDashboard = () => {
 
                 {/* Left: Total Energy Production */}
                 <div className="card energy-production-card">
-                    <div className="card-title">Total Energy Production</div>
+                    <h3 className="card-title">Total Energy Production</h3>
                     <RadialGauge
                         percentage={50.75}
                         value={20}
-                        label="Today's generation"
+                        label="Today's Generation"
                     />
                     <div className="production-stats">
                         <div className="production-stat">
@@ -280,7 +271,7 @@ const MainDashboard = () => {
 
                 {/* Mid: Plants Status */}
                 <div className="card plants-status-card">
-                    <div className="card-title">Plants Status</div>
+                    <h3 className="card-title">Plants Status</h3>
                     <div className="plants-status-body">
                         <div className="plants-status-left">
                             <div className="plants-total-count">{plantsStatusData.total}</div>
@@ -299,8 +290,8 @@ const MainDashboard = () => {
                                     <span className="status-lbl">Partially Active</span>
                                 </div>
                                 <div className="status-item">
-                                    <span className="status-val expired">{plantsStatusData.expired}</span>
-                                    <span className="status-lbl">Expired</span>
+                                    <span className="status-val inactive">{plantsStatusData.expired}</span>
+                                    <span className="status-lbl">Inactive</span>
                                 </div>
                             </div>
                         </div>
@@ -310,7 +301,7 @@ const MainDashboard = () => {
 
                 {/* Right: Net Zero Footprint */}
                 <div className="card net-zero-card">
-                    <div className="card-title">Net Zero Footprint</div>
+                    <h3 className="card-title">Net Zero Footprint</h3>
                     <NetZeroFootprint
                         co2="1.03k"
                         coal="1.4 T"
@@ -323,7 +314,7 @@ const MainDashboard = () => {
             <div className="dashboard-bottom-row">
                 {/* Left: Total Devices */}
                 <div className="card devices-card">
-                    <div className="card-title">Total Devices</div>
+                    <h3 className="card-title">Total Devices</h3>
                     <DeviceBar data={totalDevicesData} />
                 </div>
 

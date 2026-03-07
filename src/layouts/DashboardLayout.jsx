@@ -2,14 +2,28 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import TopNav from '../components/TopNav';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const DashboardLayout = () => {
     return (
-        <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', background: '#F0F4F8' }}>
+        <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', background: 'var(--bg-main)' }}>
             <Sidebar />
-            <div style={{ marginLeft: '80px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+            {/* Main Content Area - Shifted Right to account for 90px Sidebar */}
+            <div style={{ marginLeft: '90px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <TopNav />
-                <div style={{ flex: 1, overflowY: 'auto', background: '#F0F4F8' }} className="animate-fade-in">
+
+                {/* Scrollable Container with Glassmorphic styling padding */}
+                <div style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    background: 'var(--bg-main)',
+                    padding: '0 2rem 2rem 2rem'
+                }} className="animate-fade-in">
+
+                    {/* Global Breadcrumbs Area */}
+                    <Breadcrumbs />
+
                     <Outlet />
                 </div>
             </div>

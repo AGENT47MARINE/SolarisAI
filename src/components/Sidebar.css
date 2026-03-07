@@ -1,45 +1,56 @@
 .sidebar {
-    width: 80px;
-    background: #f8fafc;
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    width: 90px;
+    background: var(--bg-sidebar);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: var(--border-glass);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1.5rem 0;
+    padding: 2rem 0;
     position: fixed;
     height: 100vh;
     left: 0;
     top: 0;
     z-index: 100;
-    box-shadow: 1px 0 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease;
 }
 
 .sidebar-logo {
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: var(--border-glass);
+    border-radius: var(--radius-md);
+    box-shadow: inset 0 0 10px rgba(77, 166, 255, 0.1);
 }
 
 .logo-d {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #1e293b;
-    letter-spacing: -0.05em;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
 }
 
 .logo-star {
     position: absolute;
-    top: -4px;
-    right: -12px;
-    font-size: 0.85rem;
-    color: #eab308;
+    top: -6px;
+    right: -10px;
+    font-size: 0.9rem;
+    color: var(--status-warning);
+    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4));
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     flex: 1;
     width: 100%;
     align-items: center;
@@ -47,51 +58,102 @@
 
 .sidebar-nav-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    color: #2D9CDB;
+    width: 64px;
+    height: 64px;
+    color: var(--text-muted);
     text-decoration: none;
-    border-radius: 12px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-lg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    border: 1px solid transparent;
+}
+
+.sidebar-nav-item svg {
+    margin-bottom: 4px;
+    transition: transform 0.2s ease;
+}
+
+.nav-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    opacity: 0.8;
 }
 
 .sidebar-nav-item:hover {
-    background: #e8f4fd;
-    color: #1a7cb8;
+    background: var(--bg-card-hover);
+    color: var(--text-main);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-nav-item:hover svg {
+    transform: translateY(-2px);
+    color: var(--primary-light);
 }
 
 .sidebar-nav-item.active {
-    background: #dbeafe;
-    color: #2D9CDB;
+    background: var(--primary-glow);
+    color: var(--primary);
+    border-color: rgba(77, 166, 255, 0.2);
+    box-shadow: inset 0 0 12px rgba(77, 166, 255, 0.1);
 }
 
-/* Tooltip */
+.sidebar-nav-item.active .nav-label {
+    opacity: 1;
+}
+
+.sidebar-nav-item.active svg {
+    filter: drop-shadow(0 0 6px rgba(77, 166, 255, 0.4));
+}
+
+/* Tooltip - Adjusted for new layout */
 .sidebar-nav-item::after {
     content: attr(data-tooltip);
     position: absolute;
-    left: 58px;
-    background: #1e293b;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 6px;
+    left: 80px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(8px);
+    border: var(--border-glass);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
     font-size: 0.75rem;
-    font-family: 'Inter', sans-serif;
+    font-weight: 500;
     opacity: 0;
     pointer-events: none;
     white-space: nowrap;
-    transition: opacity 0.15s ease;
+    transition: all 0.2s ease;
+    transform: translateX(-10px);
     z-index: 200;
+    box-shadow: var(--shadow-md);
 }
 
 .sidebar-nav-item:hover::after {
     opacity: 1;
+    transform: translateX(0);
 }
 
 .sidebar-footer {
     margin-top: auto;
     padding-bottom: 0.5rem;
-    color: #94a3b8;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.logout-btn {
+    color: var(--status-critical);
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #FCA5A5;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.logout-btn:hover svg {
+    color: #FCA5A5;
 }

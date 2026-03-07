@@ -1,0 +1,76 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+PlantSummary _$PlantSummaryFromJson(Map<String, dynamic> json) => PlantSummary(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      location: json['location'] as String,
+      lat: (json['lat'] as num).toDouble(),
+      lng: (json['lng'] as num).toDouble(),
+      status: json['status'] as String,
+      todayGen: (json['today_gen'] as num?)?.toDouble() ?? 0.0,
+      totalGen: (json['total_gen'] as num?)?.toDouble() ?? 0.0,
+      capacityKwp: (json['capacity_kwp'] as num).toDouble(),
+      deviceCount: (json['device_count'] as num?)?.toInt() ?? 0,
+      lastUpdated: json['last_updated'] as String?,
+      chartData: (json['chart_data'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$PlantSummaryToJson(PlantSummary instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'location': instance.location,
+      'lat': instance.lat,
+      'lng': instance.lng,
+      'status': instance.status,
+      'today_gen': instance.todayGen,
+      'total_gen': instance.totalGen,
+      'capacity_kwp': instance.capacityKwp,
+      'device_count': instance.deviceCount,
+      'last_updated': instance.lastUpdated,
+      'chart_data': instance.chartData,
+    };
+
+PlantDetail _$PlantDetailFromJson(Map<String, dynamic> json) => PlantDetail(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      location: json['location'] as String,
+      lat: (json['lat'] as num).toDouble(),
+      lng: (json['lng'] as num).toDouble(),
+      status: json['status'] as String,
+      todayGen: (json['today_gen'] as num?)?.toDouble() ?? 0.0,
+      totalGen: (json['total_gen'] as num?)?.toDouble() ?? 0.0,
+      capacityKwp: (json['capacity_kwp'] as num).toDouble(),
+      deviceCount: (json['device_count'] as num?)?.toInt() ?? 0,
+      lastUpdated: json['last_updated'] as String?,
+      chartData: (json['chart_data'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          const [],
+      devices: (json['devices'] as List<dynamic>?)
+              ?.map((e) => DeviceSummary.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+
+Map<String, dynamic> _$PlantDetailToJson(PlantDetail instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'location': instance.location,
+      'lat': instance.lat,
+      'lng': instance.lng,
+      'status': instance.status,
+      'today_gen': instance.todayGen,
+      'total_gen': instance.totalGen,
+      'capacity_kwp': instance.capacityKwp,
+      'device_count': instance.deviceCount,
+      'last_updated': instance.lastUpdated,
+      'chart_data': instance.chartData,
+      'devices': instance.devices.map((e) => e.toJson()).toList(),
+    };

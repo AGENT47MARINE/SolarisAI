@@ -1,0 +1,149 @@
+/* Inverters List View - Dark Glassmorphic */
+
+.inverters-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.inv-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.inv-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.inv-count {
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+
+.inv-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.inv-search {
+    position: relative;
+    width: 280px;
+}
+
+.inv-search-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.inv-search-input {
+    width: 100%;
+    padding: 10px 16px 10px 42px;
+    border: var(--border-glass);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-family: var(--font-base);
+    color: var(--text-heading);
+    background: var(--bg-card);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.inv-search-input:focus {
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.inv-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.inv-table-card {
+    background: var(--bg-card);
+    border: var(--border-glass);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+}
+
+.inv-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.inv-table th {
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: var(--border-glass-light);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.inv-table td {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    border-bottom: var(--border-glass-light);
+    transition: background 0.2s;
+}
+
+.inv-table tbody tr {
+    cursor: pointer;
+}
+
+.inv-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.inv-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.inv-name {
+    font-weight: 600;
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inv-name-icon {
+    color: var(--primary);
+    background: rgba(77, 166, 255, 0.1);
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.inv-val {
+    font-weight: 500;
+}
+
+.inv-val.success {
+    color: var(--status-normal);
+}
+
+.inv-val.highlight {
+    color: var(--primary-light);
+}
+
+.inv-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}

@@ -1,0 +1,304 @@
+/* Plant Details View - Figma specific Dark Glassmorphic */
+
+.plant-details-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Header & Weather */
+.pd-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.pd-title-area {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.back-btn {
+    background: var(--bg-card);
+    border: var(--border-glass);
+    color: var(--text-heading);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 10px var(--primary-glow);
+    border-color: var(--primary);
+}
+
+.pd-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+.dot-sep {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--status-normal);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.status-badge .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+}
+
+/* Weather Card */
+.pd-weather-card {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 1.5rem;
+    align-items: center;
+}
+
+.weather-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.w-icon {
+    padding: 6px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.w-icon.temp {
+    color: #F2994A;
+}
+
+.w-icon.irr {
+    color: #F2C94C;
+}
+
+.w-icon.wind {
+    color: #56CCF2;
+}
+
+.w-val {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.w-lbl {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* KPI Grid */
+.pd-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.kpi-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-icon-wrap.primary {
+    background: rgba(77, 166, 255, 0.1);
+    color: var(--primary);
+}
+
+.kpi-icon-wrap.success {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--status-normal);
+}
+
+.kpi-content {
+    flex: 1;
+}
+
+.kpi-content.split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+.kpi-value.highlight {
+    color: var(--primary-light);
+}
+
+.kpi-value.pr-val {
+    color: var(--status-normal);
+    font-size: 1.2rem;
+}
+
+.kpi-value.cuf-val {
+    color: var(--status-warning);
+    font-size: 1.2rem;
+}
+
+.kpi-unit {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Main Grid Area */
+.pd-main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Energy Flow */
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--status-normal);
+    background: rgba(39, 174, 96, 0.1);
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--status-normal);
+    animation: pulseGlow 1.5s infinite;
+}
+
+.energy-flow-body {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-sm);
+    border: inset 1px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+@keyframes dashFlow {
+    to {
+        stroke-dashoffset: -12;
+    }
+}
+
+.flow-line-animate {
+    animation: dashFlow 1s linear infinite;
+}
+
+/* Side Column */
+.pd-side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hw-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.hw-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: var(--border-glass-light);
+    border-radius: var(--radius-sm);
+}
+
+.hw-item.error {
+    border-color: rgba(235, 87, 87, 0.3);
+    background: rgba(235, 87, 87, 0.05);
+}
+
+.hw-name {
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.hw-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.hw-count.active {
+    color: var(--status-normal);
+}
+
+.hw-count.error-text {
+    color: var(--status-critical);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

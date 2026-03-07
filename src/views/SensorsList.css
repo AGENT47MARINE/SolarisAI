@@ -1,0 +1,127 @@
+/* Sensors List View - Figma Dark Theme */
+
+.sensors-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.sen-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.sen-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.sen-count {
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+
+.sen-controls {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 100px;
+    border: var(--border-glass);
+}
+
+.sen-tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    border-radius: 100px;
+    padding: 6px 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-base);
+    transition: all 0.2s;
+}
+
+.sen-tab.active {
+    background: rgba(77, 166, 255, 0.1);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.sen-tab:hover:not(.active) {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sen-table-card {
+    background: var(--bg-card);
+    border: var(--border-glass);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+}
+
+.sen-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.sen-table th {
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: var(--border-glass-light);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.sen-table td {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    border-bottom: var(--border-glass-light);
+    transition: background 0.2s;
+}
+
+.sen-table tbody tr {
+    cursor: default;
+}
+
+.sen-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sen-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sen-name {
+    font-weight: 600;
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sen-icon {
+    color: var(--primary);
+    background: rgba(77, 166, 255, 0.1);
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.sen-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}

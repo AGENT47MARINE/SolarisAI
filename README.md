@@ -1,95 +1,143 @@
-# SolarisAI ☀️
+# SolarisAI ☀️ (Solar Monitoring Dashboard)
 
-> Solar plant monitoring dashboard — hackathon project
+> A full-stack solar plant monitoring platform with a custom Machine Learning fault diagnosis model.
 
-A full-stack solar monitoring platform with a custom ML fault diagnosis model.
+SolarisAI is a comprehensive dashboard designed to monitor solar power plants in real-time. It provides detailed analytics, heatmaps, interactive charts, and an AI-driven fault diagnosis system to ensure optimal energy production and quick issue resolution.
 
-## Quick Start
+## ✨ Key Features
 
-### Frontend (React + Vite)
+*   **Real-time Monitoring**: Track Performance Ratio (PR), Capacity Utilization Factor (CUF), and live energy generation across multiple plants.
+*   **Interactive Dashboards**: Detailed views for individual plants, inverter level data, and sensor readings.
+*   **AI Fault Diagnosis**: Built-in Machine Learning model (XGBoost) to instantly diagnose issues based on live telemetry data (Voltage, Current, Temperature, etc.) without needing external API keys.
+*   **String Level Monitoring (SLMS)**: Detailed heatmaps and data grids identifying underperforming solar strings.
+*   **Simulated IoT Data**: Includes a sophisticated backend simulator generating realistic time-series telemetry data for development and testing.
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, React Router, Recharts, Lucide React |
+| **Styling** | Vanilla CSS (Custom Figma Design System, Glassmorphic UI) |
+| **Backend** | Python, FastAPI, Pydantic |
+| **Database** | SQLite (Dev) / PostgreSQL+TimescaleDB (Prod ready), SQLAlchemy (Async) |
+| **Machine Learning** | XGBoost, scikit-learn, Pandas, NumPy |
+
+---
+
+## 🚀 Getting Started
+
+Follow these step-by-step instructions to set up and run the SolarisAI project on your local machine.
+
+### Prerequisites
+
+*   **Node.js** (v18 or higher)
+*   **Python** (v3.9 or higher)
+*   **Git**
+
+### 1. Clone the Repository
+
 ```bash
-npm install
-npm run dev
-# → http://localhost:5173
+git clone <repository-url>
+cd SolarisAI
 ```
 
-### Backend (FastAPI + Python)
+### 2. Backend Setup (FastAPI & Machine Learning)
+
+The backend requires Python and handles the API, database, and the ML prediction engine.
+
 ```bash
+# Navigate to the backend directory
 cd backend
+
+# (Optional but recommended) Create and activate a virtual environment
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install Python dependencies
 pip install -r requirements.txt
 
-# Train the ML fault diagnosis model (one-time)
+# Train the ML fault diagnosis model (Mandatory first-time setup)
+# This generates the synthetic data and trains the XGBoost model locally.
 python -m app.ml.train
-
-# Start backend server (seeds DB + starts device simulator automatically)
-uvicorn main:app --reload --port 8000
-# → http://localhost:8000/docs  (Swagger UI)
 ```
 
-## Architecture
+### 3. Frontend Setup (React)
 
-```
-Frontend (React/Vite :5173)
-        ↕ REST API (Axios)
-Backend (FastAPI :8000)
-    ├── REST API             (plants, devices, alerts, dashboard metrics)
-    ├── Custom ML Model      (XGBoost fault classifier — no external API)
-    └── Device Simulator     (generates realistic telemetry; MQTT-swap-ready)
-        ↕ SQLAlchemy async
-SQLite (dev) / PostgreSQL+TimescaleDB (prod)
-```
-
-## ML Fault Diagnosis Model
-
-Custom XGBoost multi-class classifier — **no external API key required**.
-
-- **8 fault classes**: Normal, Overtemperature, Grid Under/Overvoltage, IGBT Fault, DC String Fault, Communication Timeout, Phase Imbalance
-- **15 input features**: 3-phase voltages/currents, power, temperature, irradiance, frequency + derived imbalance/power-factor metrics
-- **Training data**: 50,000 physics-informed synthetic samples
-- **Expected accuracy**: ~92–95%
+The frontend is a modern React application built with Vite.
 
 ```bash
-# Train
-cd backend && python -m app.ml.train
+# Open a NEW terminal window/tab
+# Navigate back to the project root directory
+cd .. # If you were in the backend folder
+# Or ensure you are in the SolarisAI root folder
 
-# Evaluate
-python -m app.ml.evaluate
+# Install Node.js dependencies
+npm install
 ```
 
-## API Endpoints
+---
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/dashboard/metrics` | Aggregated KPIs |
-| `GET` | `/api/plants` | All plants with live generation data |
-| `GET` | `/api/plants/{id}` | Single plant with device list |
-| `GET` | `/api/devices/{id}/telemetry` | Time-series readings |
-| `GET` | `/api/alerts` | Alert list (filterable) |
-| `PATCH` | `/api/alerts/{id}/acknowledge` | Acknowledge an alert |
-| `POST` | `/api/ai/diagnose` | ML fault diagnosis |
+## 🏃‍♂️ Running the Application
 
-## Tech Stack
+You need to run both the backend and frontend servers simultaneously in separate terminal windows.
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19 + Vite + React Router |
-| Styling | Vanilla CSS (Figma design system) |
-| Backend | FastAPI (Python) |
-| Database | SQLite (dev) → PostgreSQL/TimescaleDB (prod) |
-| ORM | SQLAlchemy async + aiosqlite |
-| ML Model | XGBoost + scikit-learn pipeline |
-| IoT Simulation | Async background telemetry simulator |
+### Start the Backend Server
 
-## Replacing Simulator with Real IoT Devices
+```bash
+cd backend
+# Make sure your virtual environment is activated if you used one
 
-The simulator (`backend/app/services/simulator.py`) is designed for seamless swap:
-
-1. Replace `_simulate_reading()` with an MQTT subscribe callback
-2. Parse the MQTT payload to the same dict format
-3. The `_write_telemetry()` function remains unchanged
-
-MQTT topic structure:
+# Start the FastAPI server
+uvicorn main:app --reload --port 8000
 ```
-solaris/{plant_id}/{device_id}/telemetry
-solaris/{plant_id}/{device_id}/alert
+*   The backend API will run at: `http://localhost:8000`
+*   You can view the interactive API documentation (Swagger UI) at: `http://localhost:8000/docs`
+*   *Note: Starting the server automatically seeds the database with dummy plants and starts the background IoT device simulator.*
+
+### Start the Frontend Server
+
+```bash
+# In your project root directory (SolarisAI)
+npm run dev
+```
+*   The web application will open at: `http://localhost:5173`
+
+---
+
+## 📖 How to Use the Dashboard
+
+1.  **Login**: Once the frontend is running (`http://localhost:5173`), access the login page. Enter any credentials (demo mode is active) to sign in.
+2.  **Main Dashboard**: View the top-level summary across all your solar plants. Check the Net Zero footprint, total power generation, and overall system status.
+3.  **Navigate to Plants**: Use the sidebar to go to the **Plants** section. Click on a specific plant (e.g., "Goa Shipyard Limited") to view detailed KPI cards.
+4.  **View Inverters & Devices**: Inside a plant view, drill down into specific **Inverters** to see real-time 3-phase grid measurements and string currents.
+5.  **String Data Heatmap**: Navigate to the **String Data** page from the sidebar to view a color-coded heatmap of all connected solar strings. Red indicates a severe fault, yellow is a warning, and green is optimal.
+6.  **AI Diagnosis**: 
+    *   Find the **AI Diagnosis** card on an Inverter page or via the Navigation menu.
+    *   Click **Run AI Diagnosis**. 
+    *   The system will grab the latest telemetry data for that device, run it through the local XGBoost model, and instantly provide a fault prediction (e.g., "Normal", "Overtemperature", "Grid Overvoltage") along with confidence scores and recommended actions.
+
+## 📁 Project Structure
+
+```text
+SolarisAI/
+├── backend/                  # Python FastAPI application
+│   ├── app/
+│   │   ├── api/              # API Route handlers (endpoints)
+│   │   ├── core/             # Configuration and settings
+│   │   ├── db/               # Database setup and models
+│   │   ├── ml/               # Machine Learning pipelines and models
+│   │   └── services/         # Business logic & IoT simulator
+│   ├── requirements.txt      # Python dependencies
+│   └── main.py               # FastAPI entry point
+├── src/                      # React Frontend application
+│   ├── assets/               # Images and static assets
+│   ├── components/           # Reusable UI components (Sidebar, Cards, Charts)
+│   ├── views/                # Full page views (Dashboard, Login, PlantDetails)
+│   ├── App.jsx               # Main React entry point & Routing
+│   └── index.css             # Global styles and design system tokens
+├── package.json              # Node.js dependencies
+└── vite.config.js            # Vite bundler configuration
 ```

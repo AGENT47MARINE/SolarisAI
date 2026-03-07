@@ -1,55 +1,30 @@
-/* Plants List View - Matching Figma Design */
+/* Plants List View - Figma Dark Theme */
 
 .plants-view {
-    padding: 0.5rem 1.5rem 2rem;
-    min-height: 100%;
-    background: #F0F4F8;
-}
-
-.breadcrumb {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-bottom: 0.5rem;
-}
-
-.breadcrumb-link {
-    color: #64748b;
-    cursor: pointer;
-}
-
-.breadcrumb-link:hover {
-    color: #2D9CDB;
-}
-
-.breadcrumb-sep {
-    color: #94a3b8;
-    margin: 0 4px;
-}
-
-.breadcrumb-current {
-    color: #1e293b;
-    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .plants-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
 .plants-title {
     font-size: 1.75rem;
-    font-weight: 700;
-    color: #2D9CDB;
+    font-weight: 600;
+    color: var(--text-heading);
 }
 
 .plants-count {
     font-weight: 400;
     font-size: 1.4rem;
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .plants-controls {
@@ -61,29 +36,31 @@
 .filter-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    border: 1.5px solid #2D9CDB;
-    color: #2D9CDB;
-    background: white;
+    gap: 8px;
+    border: var(--border-glass);
+    color: var(--text-main);
+    background: var(--bg-card);
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-base);
     transition: all 0.2s;
 }
 
 .filter-btn:hover {
-    background: #EBF5FB;
+    background: var(--bg-card-hover);
+    color: var(--text-heading);
 }
 
 .view-toggle {
     display: flex;
-    background: #f1f5f9;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
     padding: 3px;
     gap: 2px;
+    border: var(--border-glass);
 }
 
 .view-btn {
@@ -94,16 +71,20 @@
     height: 32px;
     background: none;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    color: #64748b;
+    color: var(--text-muted);
     transition: all 0.15s;
 }
 
 .view-btn.active {
-    background: white;
-    color: #2D9CDB;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    background: var(--bg-card);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.view-btn:hover:not(.active) {
+    color: var(--text-main);
 }
 
 .search-bar {
@@ -114,73 +95,76 @@
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     pointer-events: none;
+    color: var(--text-muted);
 }
 
 .search-input {
-    padding: 8px 16px 8px 36px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 24px;
+    padding: 10px 16px 10px 42px;
+    border: var(--border-glass);
+    border-radius: 100px;
     font-size: 0.85rem;
-    font-family: 'Inter', sans-serif;
-    color: #1e293b;
-    background: white;
+    font-family: var(--font-base);
+    color: var(--text-heading);
+    background: var(--bg-card);
     outline: none;
-    width: 220px;
-    transition: border-color 0.2s;
+    width: 260px;
+    transition: all 0.2s;
 }
 
 .search-input:focus {
-    border-color: #2D9CDB;
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
 .search-input::placeholder {
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 /* Plants Grid */
 .plants-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 /* Plant Card */
 .plant-card {
     cursor: pointer;
-    padding: 1.25rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.plant-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .plant-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.75rem;
 }
 
 .plant-name {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: #2D9CDB;
-    margin-bottom: 2px;
+    color: var(--text-heading);
+    margin-bottom: 4px;
 }
 
 .plant-updated {
-    font-size: 0.72rem;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    color: var(--text-muted);
 }
 
 .plant-status-badge {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .status-dot {
@@ -191,60 +175,69 @@
 }
 
 .status-text {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 500;
 }
 
 /* Metrics row */
 .plant-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.plant-metric {
     display: flex;
-    gap: 1.5rem;
-    margin-bottom: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .plant-metric-label {
     font-size: 0.7rem;
-    color: #94a3b8;
-    margin-bottom: 2px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .plant-metric-value {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: #2D9CDB;
+    color: var(--text-main);
 }
 
-.plant-metric-value.devices {
-    color: #2D9CDB;
+.plant-metric-value.highlight {
+    color: var(--primary-light);
 }
 
 /* Chart area */
 .plant-chart-area {
-    background: #F8FBFF;
-    border-radius: 8px;
-    padding: 8px 4px 4px;
-    border: 1px solid #EBF3FC;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    padding: 12px 0 0 0;
+    border: var(--border-glass-light);
+    position: relative;
+    overflow: hidden;
 }
 
 .chart-label {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    margin-bottom: 4px;
-    padding-left: 4px;
-}
-
-.chart-x-labels {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0 0;
-    font-size: 0.6rem;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-left: 12px;
 }
 
 .no-results {
     grid-column: 1 / -1;
     text-align: center;
-    color: #94a3b8;
-    padding: 3rem;
-    font-size: 0.95rem;
+    color: var(--text-muted);
+    padding: 4rem;
+    font-size: 1rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: var(--border-glass);
 }

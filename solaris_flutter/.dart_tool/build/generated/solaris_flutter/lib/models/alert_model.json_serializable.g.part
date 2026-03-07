@@ -1,0 +1,53 @@
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+AlertOut _$AlertOutFromJson(Map<String, dynamic> json) => AlertOut(
+      id: (json['id'] as num).toInt(),
+      deviceId: json['device_id'] as String,
+      plantId: json['plant_id'] as String,
+      severity: json['severity'] as String,
+      message: json['message'] as String,
+      acknowledged: json['acknowledged'] as bool,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      deviceName: json['device_name'] as String?,
+      plantName: json['plant_name'] as String?,
+    );
+
+Map<String, dynamic> _$AlertOutToJson(AlertOut instance) => <String, dynamic>{
+      'id': instance.id,
+      'device_id': instance.deviceId,
+      'plant_id': instance.plantId,
+      'severity': instance.severity,
+      'message': instance.message,
+      'acknowledged': instance.acknowledged,
+      'created_at': instance.createdAt.toIso8601String(),
+      'device_name': instance.deviceName,
+      'plant_name': instance.plantName,
+    };
+
+DiagnoseResponse _$DiagnoseResponseFromJson(Map<String, dynamic> json) =>
+    DiagnoseResponse(
+      faultClass: json['fault_class'] as String,
+      confidence: (json['confidence'] as num).toDouble(),
+      rootCause: json['root_cause'] as String,
+      recommendations: (json['recommendations'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      estimatedDowntime: json['estimated_downtime'] as String,
+      severity: json['severity'] as String,
+      modelVersion: json['model_version'] as String,
+      telemetryUsed: json['telemetry_used'] as Map<String, dynamic>?,
+    );
+
+Map<String, dynamic> _$DiagnoseResponseToJson(DiagnoseResponse instance) =>
+    <String, dynamic>{
+      'fault_class': instance.faultClass,
+      'confidence': instance.confidence,
+      'root_cause': instance.rootCause,
+      'recommendations': instance.recommendations,
+      'estimated_downtime': instance.estimatedDowntime,
+      'severity': instance.severity,
+      'model_version': instance.modelVersion,
+      'telemetry_used': instance.telemetryUsed,
+    };
