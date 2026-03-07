@@ -173,7 +173,14 @@
 .plant-map {
     flex: 1;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    border: var(--border-glass-light);
+    height: 100%;
+    min-height: 200px;
 }
 
 @keyframes pulseMap {
@@ -501,7 +508,8 @@
 
 .bar-tooltip {
     position: absolute;
-    top: -50px;
+    bottom: 100%;
+    margin-bottom: 8px;
     background: var(--bg-panel);
     backdrop-filter: blur(10px);
     border: var(--border-glass);
@@ -511,9 +519,14 @@
     box-shadow: var(--shadow-md);
     z-index: 10;
     pointer-events: none;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
+    white-space: nowrap;
+}
+
+.bar-item:hover .bar-tooltip {
+    display: flex;
 }
 
 .bar-tooltip-date {

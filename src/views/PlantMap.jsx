@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { invertersData, sensorsData } from '../data/mockData';
-import { Server, Activity } from 'lucide-react';
+import apiService from '../services/apiService';
+import { Server, Activity, Loader2 } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
 
 // Fix Leaflet's default icon path issues in React
@@ -57,91 +57,90 @@ const getStateCoordinates = (location) => {
     return [20.59, 78.96]; // Default India center
 };
 
-const PlantMap = () => {
-    // Center at approximate India coordinates to view all states
+const PlantMap = ({ statusData }) => {
+    const [devices, setDevices] = useState([]);
+    const [loading, setLoading] = useState(!statusData);
+
+    useEffect(() => {
+        if (statusData) return; // Use data from props if available (dashboard view)
+
+        const fetchDevices = async () => {
+            try {
+                const data = await apiService.getDevices();
+                setDevices(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Map data fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchDevices();
+    }, [statusData]);
+
     const mapCenter = [22.0, 79.0];
 
-    return (
-        <div className="view-container animate-fade-in">
-            <div className="page-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                <h1 className="page-title" style={{ color: 'var(--primary-dark)' }}>Live Operations Map</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Interactive spatial view of devices across sites</p>
-            </div>
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: '400px' }}>
+            <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+        </div>
+    );
 
-            <div className="card" style={{ height: '650px', padding: 0, overflow: 'hidden', position: 'relative' }}>
-                <MapContainer center={mapCenter} zoom={5} style={{ height: '100%', width: '100%', zIndex: 0 }}>
-                    {/* Map tiles - OpenStreetMap */}
+    const displayDevices = statusData ? [] : devices;
+
+    return (
+        <div className={statusData ? "dashboard-map-container" : "view-container animate-fade-in"}>
+            {!statusData && (
+                <div className="page-header" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                    <h1 className="page-title" style={{ color: 'var(--primary-dark)' }}>Live Operations Map</h1>
+                    <p style={{ color: 'var(--text-muted)' }}>Interactive spatial view of devices across sites</p>
+                </div>
+            )}
+
+            <div className="card" style={{ height: statusData ? '100%' : '650px', padding: 0, overflow: 'hidden', position: 'relative' }}>
+                <MapContainer center={mapCenter} zoom={statusData ? 4 : 5} style={{ height: '100%', width: '100%', zIndex: 0 }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                     />
 
-                    {/* Rendering Inverters */}
-                    {invertersData.map((inv, index) => {
-                        const baseCoord = getStateCoordinates(inv.location);
-                        // Spread the nodes realistically over a small area
-                        const offsetLat = index * 0.1 * (index % 2 === 0 ? 1 : -1);
-                        const offsetLng = index * 0.1 * (index % 3 === 0 ? 1 : -1);
-                        const position = [baseCoord[0] + offsetLat, baseCoord[1] + offsetLng];
+                    {displayDevices.map((dev, index) => {
+                        // Use real coordinates if provided by API, otherwise fallback
+                        let position = [0, 0];
+                        if (dev.lat && dev.lng) {
+                            position = [dev.lat, dev.lng];
+                            // Add a tiny random offset to distinguish multiple devices at same plant
+                            position[0] += (index * 0.0001) - 0.0005;
+                            position[1] += (index * 0.0001) - 0.0005;
+                        } else {
+                            const baseCoord = getStateCoordinates(dev.location);
+                            const offsetLat = (index % 10) * 0.1 * (index % 2 === 0 ? 1 : -1);
+                            const offsetLng = (index % 10) * 0.1 * (index % 3 === 0 ? 1 : -1);
+                            position = [baseCoord[0] + offsetLat, baseCoord[1] + offsetLng];
+                        }
 
-                        const icon = createCustomIcon(inv.telemetry.status, 'inverter');
+                        const icon = createCustomIcon(dev.status, 'inverter');
 
                         return (
-                            <Marker key={`inv-${inv.id}`} position={position} icon={icon}>
+                            <Marker key={dev.id} position={position} icon={icon}>
                                 <Tooltip direction="top" offset={[0, -20]} opacity={1}>
-                                    <strong>{inv.deviceName}</strong><br />
-                                    <span style={{ color: 'gray' }}>{inv.location}</span>
+                                    <strong>{dev.device_name}</strong><br />
+                                    <span style={{ color: 'gray' }}>{dev.location}</span>
                                 </Tooltip>
                                 <Popup>
                                     <div style={{ minWidth: '150px' }}>
-                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#334155' }}>{inv.deviceName}</h4>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#334155' }}>{dev.device_name}</h4>
                                         <div style={{ marginBottom: '6px', fontSize: '0.85rem' }}>
                                             Status: <span style={{
                                                 fontWeight: 'bold',
                                                 textTransform: 'uppercase',
-                                                color: inv.telemetry.status === 'normal' ? 'var(--status-normal)' :
-                                                    inv.telemetry.status === 'warning' ? 'var(--status-warning)' : 'var(--status-critical)'
+                                                color: dev.status === 'active' || dev.status === 'normal' ? 'var(--status-normal)' :
+                                                    dev.status === 'warning' ? 'var(--status-warning)' : 'var(--status-critical)'
                                             }}>
-                                                {inv.telemetry.status}
+                                                {dev.status}
                                             </span>
                                         </div>
                                         <div style={{ fontSize: '0.85rem' }}>
-                                            Power: <strong>{inv.telemetry.activePower} kW</strong>
-                                        </div>
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        );
-                    })}
-
-                    {/* Rendering Sensors */}
-                    {sensorsData.map((sensor, index) => {
-                        // Simulate warning on some sensors
-                        const isDown = sensor.deviceName.includes("RADIATION");
-                        const status = isDown ? 'warning' : 'normal';
-
-                        const baseCoord = getStateCoordinates(sensor.location);
-                        // Spread differently than inverters
-                        const offsetLat = (index + 2) * 0.08 * (index % 2 === 0 ? -1 : 1);
-                        const offsetLng = (index + 2) * 0.08 * (index % 3 === 0 ? -1 : 1);
-                        const position = [baseCoord[0] + offsetLat, baseCoord[1] + offsetLng];
-
-                        const icon = createCustomIcon(status, 'sensor');
-
-                        return (
-                            <Marker key={`sen-${sensor.id}`} position={position} icon={icon}>
-                                <Tooltip direction="top" offset={[0, -20]} opacity={1}>
-                                    <strong>{sensor.deviceName || sensor.device_name}</strong><br />
-                                    <span style={{ color: 'gray' }}>{sensor.location}</span>
-                                </Tooltip>
-                                <Popup>
-                                    <div style={{ minWidth: '140px' }}>
-                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#334155' }}>{sensor.deviceName || sensor.device_name}</h4>
-                                        <div style={{ fontSize: '0.85rem', marginBottom: '4px' }}>
-                                            Type: <strong>{sensor.category.toUpperCase()}</strong>
-                                        </div>
-                                        <div style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                                            Mfg: {sensor.manufacturer}
+                                            Current Gen: <strong>{(dev.today_gen || 0).toFixed(1)} kWh</strong>
                                         </div>
                                     </div>
                                 </Popup>

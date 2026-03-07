@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { plantsData, invertersData } from '../data/mockData';
-import { ArrowLeft, Loader2, ThermometerSun, Wind, Droplets, Sun, AlertTriangle } from 'lucide-react';
+import apiService from '../services/apiService';
+import { ArrowLeft, Loader2, ThermometerSun, Wind, Droplets, Sun, AlertTriangle, Zap } from 'lucide-react';
 import './PlantDetails.css';
 
 // SVG Energy Flow Diagram (Matches Slide 11)
@@ -60,14 +60,13 @@ const PlantDetails = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchPlantData = () => {
+        const fetchPlantData = async () => {
             try {
-                setTimeout(() => {
-                    const plantData = plantsData.find(p => p.id === id) || plantsData[0];
-                    setPlant(plantData);
-                    setDevices(invertersData); // mock devices
-                    setLoading(false);
-                }, 400);
+                const data = await apiService.getPlantDetails(id);
+                setPlant(data);
+                // We could also bridge device telemetry here if needed
+                setDevices(data.devices || []);
+                setLoading(false);
             } catch (err) {
                 console.error("Failed to fetch plant details", err);
                 setLoading(false);
@@ -99,11 +98,13 @@ const PlantDetails = () => {
                     <div>
                         <h1 className="page-title">{plant.name}</h1>
                         <div className="pd-subtitle">
-                            <span>ID: {plant.plant_id || 'PLN-001'}</span>
+                            <span>ID: {plant.id}</span>
                             <span className="dot-sep">•</span>
-                            <span>{plant.location || 'Site Alpha, District 9'}</span>
+                            <span>{plant.location}</span>
                             <span className="dot-sep">•</span>
-                            <span className="status-badge active"><span className="status-dot"></span>Active</span>
+                            <span className={`status-badge ${plant.status}`}>
+                                <span className="status-dot"></span>{plant.status === 'active' ? 'Active' : plant.status.toUpperCase()}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -137,11 +138,11 @@ const PlantDetails = () => {
             <div className="pd-kpi-grid">
                 <div className="kpi-card card">
                     <div className="kpi-icon-wrap primary">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                        <Zap size={24} />
                     </div>
                     <div className="kpi-content">
-                        <div className="kpi-label">Current Power</div>
-                        <div className="kpi-value highlight">{plant.current_power || '92.4'} <span className="kpi-unit">kW</span></div>
+                        <div className="kpi-label">Today's Generation</div>
+                        <div className="kpi-value highlight">{plant.today_gen.toFixed(1)} <span className="kpi-unit">kWh</span></div>
                     </div>
                 </div>
                 <div className="kpi-card card">
@@ -149,8 +150,8 @@ const PlantDetails = () => {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
                     </div>
                     <div className="kpi-content">
-                        <div className="kpi-label">Today's Energy</div>
-                        <div className="kpi-value">{plant.today_gen || '450'} <span className="kpi-unit">kWh</span></div>
+                        <div className="kpi-label">Total Generation</div>
+                        <div className="kpi-value">{plant.total_gen.toLocaleString()} <span className="kpi-unit">kWh</span></div>
                     </div>
                 </div>
                 <div className="kpi-card card">
@@ -201,21 +202,17 @@ const PlantDetails = () => {
                         <h3 className="card-title">Hardware Summary</h3>
                         <div className="hw-list">
                             <div className="hw-item">
-                                <span className="hw-name">Inverters</span>
-                                <span className="hw-count active">12/12 Online</span>
+                                <span className="hw-name">Connected Devices</span>
+                                <span className="hw-count active">{plant.device_count} Online</span>
                             </div>
-                            <div className="hw-item">
-                                <span className="hw-name">String Combiner Boxes</span>
-                                <span className="hw-count active">24/24 Online</span>
-                            </div>
-                            <div className="hw-item">
-                                <span className="hw-name">Weather Station (WMS)</span>
-                                <span className="hw-count active">1/1 Online</span>
-                            </div>
-                            <div className="hw-item error">
-                                <span className="hw-name">Energy Meter (MFM)</span>
-                                <span className="hw-count error-text"><AlertTriangle size={12} /> Comm. Error</span>
-                            </div>
+                            {plant.devices?.slice(0, 3).map(dev => (
+                                <div key={dev.id} className={`hw-item ${dev.status === 'critical' ? 'error' : ''}`} onClick={() => navigate(`/inverters/${dev.id}`)} style={{ cursor: 'pointer' }}>
+                                    <span className="hw-name">{dev.device_name}</span>
+                                    <span className={`hw-count ${dev.status === 'active' ? 'active' : 'error-text'}`}>
+                                        {dev.status === 'active' ? 'Online' : dev.status.toUpperCase()}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

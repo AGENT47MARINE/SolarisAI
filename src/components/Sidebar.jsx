@@ -57,10 +57,11 @@ const ExportIcon = () => (
 
 const navItems = [
     { to: '/dashboard', icon: DashboardIcon, tooltip: 'Dashboard', label: 'Home' },
-    { to: '/inverters', icon: PanelIcon, tooltip: 'Plants', label: 'Plants' },
-    { to: '/sensors', icon: MonitorIcon, tooltip: 'Sensors', label: 'Sensors' },
+    { to: '/plants', icon: PanelIcon, tooltip: 'Solar Plants', label: 'Plants' },
+    { to: '/inverters', icon: MonitorIcon, tooltip: 'Inverters & Devices', label: 'Inverters' },
+    { to: '/sensors', icon: SignalIcon, tooltip: 'Sensors', label: 'Sensors' },
     { to: '/alerts', icon: SignalIcon, tooltip: 'Alerts', label: 'Alerts' },
-    { to: '/map', icon: ExportIcon, tooltip: 'Export Data', label: 'Export' },
+    { to: '/map', icon: ExportIcon, tooltip: 'Live Map', label: 'Map' },
 ];
 
 const Sidebar = () => {

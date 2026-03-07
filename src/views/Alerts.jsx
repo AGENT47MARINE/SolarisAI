@@ -1,23 +1,45 @@
-import React, { useState } from 'react';
-import { alertsData } from '../data/mockData';
-import { AlertTriangle, Info, ShieldCheck, ChevronRight, X, Sparkles } from 'lucide-react';
-import './Alerts.css'; // Add CSS import
+import React, { useState, useEffect } from 'react';
+import apiService from '../services/apiService';
+import { AlertTriangle, Info, ShieldCheck, ChevronRight, X, Sparkles, Loader2 } from 'lucide-react';
+import './Alerts.css';
 
 const Alerts = () => {
     const [selectedAlert, setSelectedAlert] = useState(null);
+    const [alerts, setAlerts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    React.useEffect(() => {
+        const fetchAlerts = async () => {
+            try {
+                const data = await apiService.getAlerts();
+                setAlerts(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Alerts fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchAlerts();
+    }, []);
+
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+            <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+        </div>
+    );
 
     const renderDiagnostic = (alert) => {
         // Mocking an AI response
         let diagnosis = "";
         let recommendation = "";
 
-        if (alert.device.includes("CHARANKA_INV")) {
+        if (alert.device_id?.includes("CHARANKA_INV")) {
             diagnosis = "The grid voltage has dropped below the operational threshold of 360V for Phase AB. Potential localized islanding event detected in the Charanka Solar Park sector.";
             recommendation = "1. Dispatch technician to check the AC breaker for CHARANKA_INV_03.\n2. Verify grid stability at the Gujarat secondary transformer.";
-        } else if (alert.device.includes("BHADLA")) {
+        } else if (alert.device_id?.includes("BHADLA")) {
             diagnosis = "The IGBT temperature has risen to 52.2°C, which is above the 50°C safety margin. This is correlated with the ongoing desert heat wave in Rajasthan.";
             recommendation = "1. Check for dust accumulation on the inverter heat sinks.\n2. Ensure cooling fans are operating at 100% duty cycle.\n3. Monitor for the next 4 hours; if temp exceeds 55°C, curtail power.";
-        } else if (alert.device.includes("PAVAGADA")) {
+        } else if (alert.device_id?.includes("PAVAGADA")) {
             diagnosis = "Critical Thermal Runaway Event. Core temperature has exceeded terminal thresholds (65.5°C). Immediate shutdown sequence initiated to prevent hardware damage at the Karnataka site.";
             recommendation = "1. Priority 1 Dispatch to Pavagada site immediately.\n2. Do NOT attempt restart until thermal imaging sweep is completed.";
         } else {
@@ -41,7 +63,7 @@ const Alerts = () => {
 
                 <div className="modal-context">
                     <div className="section-label">Event Context Log</div>
-                    <div className="context-text">{alert.device} — {alert.message}</div>
+                    <div className="context-text">{alert.device_id} — {alert.message}</div>
                 </div>
 
                 <div className="modal-section">
@@ -72,24 +94,24 @@ const Alerts = () => {
             </div>
 
             <div className="alerts-card">
-                {alertsData.map(alert => (
+                {alerts.map(alert => (
                     <div key={alert.id} className="alert-row" onClick={() => setSelectedAlert(alert)}>
                         <div className="alert-content-left">
                             <div className="alert-icon-wrap">
-                                {alert.type === 'critical' ? (
+                                {alert.severity === 'critical' ? (
                                     <AlertTriangle color="var(--status-critical)" size={24} />
                                 ) : (
                                     <Info color="var(--status-warning)" size={24} />
                                 )}
                             </div>
                             <div>
-                                <div className="alert-device">{alert.device}</div>
+                                <div className="alert-device">{alert.device_id}</div>
                                 <div className="alert-msg">{alert.message}</div>
                             </div>
                         </div>
 
                         <div className="alert-content-right">
-                            <span className="alert-time">{alert.time}</span>
+                            <span className="alert-time">{new Date(alert.created_at).toLocaleTimeString()}</span>
                             <div className="ai-diag-trigger">
                                 AI Diagnosis <ChevronRight size={16} />
                             </div>

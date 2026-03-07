@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, RefreshCw, Activity, Zap, Cpu } from 'lucide-react';
-import { invertersData } from '../data/mockData';
+import apiService from '../services/apiService';
+import { ArrowLeft, Download, RefreshCw, Activity, Zap, Cpu, Loader2, BrainCircuit } from 'lucide-react';
 import './DeviceDetails.css';
 
 // SVG String Current Heatmap
@@ -81,33 +81,97 @@ const StringHeatmap = () => {
 const DeviceDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const inverter = invertersData.find(i => i.id === id);
-    const [activeTab, setActiveTab] = useState('heatmap'); // 'heatmap' or 'trend'
+    const [device, setDevice] = useState(null);
+    const [telemetry, setTelemetry] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [diagLoading, setDiagLoading] = useState(false);
+    const [diagnosis, setDiagnosis] = useState(null);
+    const [activeTab, setActiveTab] = useState('heatmap');
 
-    if (!inverter) return <div>Device not found</div>;
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [devData, telData] = await Promise.all([
+                    apiService.getDeviceDetails(id),
+                    apiService.getDeviceTelemetry(id)
+                ]);
+                setDevice(devData);
+                setTelemetry(telData);
+                setLoading(false);
+            } catch (err) {
+                console.error("Device details fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchData();
+        const interval = setInterval(fetchData, 5000); // Live telemetry
+        return () => clearInterval(interval);
+    }, [id]);
 
-    const { telemetry } = inverter;
+    const handleDiagnose = async () => {
+        setDiagLoading(true);
+        setDiagnosis(null);
+        try {
+            const result = await apiService.diagnoseDevice(id);
+            setDiagnosis(result);
+        } catch (err) {
+            console.error("Diagnosis error:", err);
+            setDiagnosis({ fault_type: "Error connecting to AI service" });
+        } finally {
+            setDiagLoading(false);
+        }
+    };
+
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+            <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+        </div>
+    );
+
+    if (!device) return <div className="error-message">Device not found</div>;
 
     return (
         <div className="device-details-view animate-fade-in">
             {/* Header */}
             <div className="dd-header">
-                <div className="dd-title-area">
-                    <button className="back-btn" onClick={() => navigate(-1)}>
-                        <ArrowLeft size={20} />
-                    </button>
-                    <div>
-                        <h1 className="page-title">{inverter.deviceName || inverter.device_name}</h1>
-                        <div className="dd-subtitle">
-                            <span>CT & String Analytics</span>
-                            <span className="dot-sep">•</span>
-                            <span>{inverter.location}</span>
-                            <span className="dot-sep">•</span>
-                            <span>Last updated: Just now</span>
-                        </div>
+                <div>
+                    <h1 className="page-title">{device.device_name}</h1>
+                    <div className="dd-subtitle">
+                        <span>CT & String Analytics</span>
+                        <span className="dot-sep">•</span>
+                        <span>{device.manufacturer}</span>
+                        <span className="dot-sep">•</span>
+                        <span>Last updated: Just now</span>
                     </div>
                 </div>
+
+                <div className="dd-actions">
+                    <button
+                        className={`ai-diag-btn ${diagLoading ? 'loading' : ''} ${diagnosis ? 'completed' : ''}`}
+                        onClick={handleDiagnose}
+                        disabled={diagLoading}
+                    >
+                        {diagLoading ? (
+                            <><RefreshCw className="animate-spin" size={18} /> Analyzing...</>
+                        ) : (
+                            <><BrainCircuit size={18} /> {diagnosis ? 'Re-run AI Diagnosis' : 'Run AI Diagnosis'}</>
+                        )}
+                    </button>
+                    <button className="icon-btn secondary" title="Export CSV"><Download size={18} /></button>
+                </div>
             </div>
+
+            {diagnosis && (
+                <div className={`diagnosis-alert animate-slide-in ${diagnosis.health_score < 70 ? 'fault' : 'healthy'}`}>
+                    <div className="diag-header">
+                        <BrainCircuit size={20} />
+                        <span>AI Diagnosis Result: <strong>{diagnosis.fault_type === 'Normal' ? 'Healthy System' : diagnosis.fault_type}</strong></span>
+                        <div className="health-score-mini">Confidence: {diagnosis.confidence.toFixed(1)}%</div>
+                    </div>
+                    <p className="diag-desc">{diagnosis.recommendation}</p>
+                    <button className="diag-close" onClick={() => setDiagnosis(null)}>×</button>
+                </div>
+            )}
 
             {/* KPIs */}
             <div className="dd-kpis">
@@ -115,15 +179,15 @@ const DeviceDetails = () => {
                     <div className="kpi-icon-wrap primary"><Zap size={24} /></div>
                     <div className="kpi-content">
                         <div className="kpi-label">Active Power</div>
-                        <div className="kpi-value highlight">{telemetry.activePower.toFixed(1)} <span className="kpi-unit">kW</span></div>
+                        <div className="kpi-value highlight">{(telemetry?.active_power || 0).toFixed(1)} <span className="kpi-unit">kW</span></div>
                     </div>
                 </div>
                 <div className="kpi-card card">
                     <div className="kpi-icon-wrap" style={{ color: '#F2C94C', background: 'rgba(242, 201, 76, 0.1)' }}>
                         <Cpu size={24} /></div>
                     <div className="kpi-content">
-                        <div className="kpi-label">Total Strings</div>
-                        <div className="kpi-value">12 <span className="kpi-unit">Connected</span></div>
+                        <div className="kpi-label">Health Score</div>
+                        <div className="kpi-value">{telemetry?.health_score || 100}% <span className="kpi-unit">Optimal</span></div>
                     </div>
                 </div>
             </div>
@@ -138,20 +202,16 @@ const DeviceDetails = () => {
                         <h3 className="metrics-title"><Activity size={18} /> Grid Measurement</h3>
                         <div className="metrics-grid">
                             <div className="metric-item">
-                                <div className="m-lbl">Voltage AB / BC / AC</div>
-                                <div className="m-val">{telemetry.voltage.ab} / {telemetry.voltage.bc} / {telemetry.voltage.ac} <span className="m-unit">V</span></div>
+                                <div className="m-lbl">Phase Voltages (Avg)</div>
+                                <div className="m-val">{(telemetry?.voltage_a || 0).toFixed(1)} / {(telemetry?.voltage_b || 0).toFixed(1)} / {(telemetry?.voltage_c || 0).toFixed(1)} <span className="m-unit">V</span></div>
                             </div>
                             <div className="metric-item">
-                                <div className="m-lbl">Phase Voltage A / B / C</div>
-                                <div className="m-val">{telemetry.voltage.a} / {telemetry.voltage.b} / {telemetry.voltage.c} <span className="m-unit">V</span></div>
-                            </div>
-                            <div className="metric-item">
-                                <div className="m-lbl">Phase Current A / B / C</div>
-                                <div className="m-val highlight">{telemetry.current.a} / {telemetry.current.b} / {telemetry.current.c} <span className="m-unit">A</span></div>
+                                <div className="m-lbl">Phase Currents (Avg)</div>
+                                <div className="m-val highlight">{(telemetry?.current_a || 0).toFixed(2)} / {(telemetry?.current_b || 0).toFixed(2)} / {(telemetry?.current_c || 0).toFixed(2)} <span className="m-unit">A</span></div>
                             </div>
                             <div className="metric-item">
                                 <div className="m-lbl">Grid Frequency</div>
-                                <div className="m-val">{telemetry.frequency.toFixed(2)} <span className="m-unit">Hz</span></div>
+                                <div className="m-val">{(telemetry?.frequency || 50.00).toFixed(2)} <span className="m-unit">Hz</span></div>
                             </div>
                         </div>
                     </div>
@@ -161,11 +221,11 @@ const DeviceDetails = () => {
                         <div className="metrics-grid">
                             <div className="metric-item">
                                 <div className="m-lbl">E-Today</div>
-                                <div className="m-val highlight">{(inverter.todayGeneration || inverter.today_gen)?.toFixed(2)} <span className="m-unit">kWh</span></div>
+                                <div className="m-val highlight">{(device.today_gen || 0).toFixed(2)} <span className="m-unit">kWh</span></div>
                             </div>
                             <div className="metric-item">
                                 <div className="m-lbl">E-Total</div>
-                                <div className="m-val">{(inverter.totalGeneration || inverter.total_gen)?.toFixed(1)} <span className="m-unit">kWh</span></div>
+                                <div className="m-val">{(device.total_gen || 0).toFixed(1)} <span className="m-unit">kWh</span></div>
                             </div>
                         </div>
                     </div>

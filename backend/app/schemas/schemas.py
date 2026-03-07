@@ -36,6 +36,8 @@ class DeviceSummary(BaseModel):
     manufacturer: str
     status: str
     plant_id: str
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
     class Config:
         from_attributes = True
@@ -96,6 +98,8 @@ class DashboardMetrics(BaseModel):
     total_devices: int
     device_breakdown: dict  # {mfm: N, wms: N, slms: N, inverter: N}
     energy_chart: List[dict]  # [{day, value}]
+    revenue_chart: List[dict] = [] # [{day, value}]
+    total_revenue_inr: float = 0.0
 
 
 # ── AI Diagnosis ──────────────────────────────────────────────────────────────

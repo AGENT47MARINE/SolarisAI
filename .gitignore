@@ -49,3 +49,11 @@ backend/app/ml/models/
 # Keep folder but not generated files
 !backend/app/ml/models/.gitkeep
 !backend/app/ml/data/.gitkeep
+
+# Flutter / Dart
+solaris_flutter/.dart_tool/
+solaris_flutter/.packages
+solaris_flutter/.flutter-plugins
+solaris_flutter/.flutter-plugins-dependencies
+solaris_flutter/build/
+solaris_flutter/*.log

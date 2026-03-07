@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
-import { sensorsData } from '../data/mockData';
-import { ThermometerSun, Wind, Activity } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import apiService from '../services/apiService';
+import { ThermometerSun, Wind, Activity, Loader2 } from 'lucide-react';
 import './SensorsList.css';
 
 const SensorsList = () => {
     const [activeFilter, setActiveFilter] = useState('All');
+    const [sensors, setSensors] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const filtered = sensorsData.filter(sensor =>
+    useEffect(() => {
+        const fetchSensors = async () => {
+            try {
+                const data = await apiService.getDevices();
+                // Filter for non-inverter devices if needed, or assume all non-inverters are sensors
+                const nonInverters = data.filter(d => d.category.toLowerCase() !== 'inverter');
+                setSensors(nonInverters);
+                setLoading(false);
+            } catch (err) {
+                console.error("Sensors fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchSensors();
+    }, []);
+
+    const filtered = sensors.filter(sensor =>
         activeFilter === 'All' ? true : sensor.category.toLowerCase() === activeFilter.toLowerCase()
     );
 
@@ -18,6 +36,12 @@ const SensorsList = () => {
             default: return <Activity size={16} className="sen-icon" />;
         }
     };
+
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+            <Loader2 className="animate-spin" size={48} color="var(--primary)" />
+        </div>
+    );
 
     return (
         <div className="sensors-view animate-fade-in">
@@ -47,7 +71,7 @@ const SensorsList = () => {
                             <th>Category</th>
                             <th>Manufacturer</th>
                             <th>Location / Phase</th>
-                            <th>Registration Date</th>
+                            <th>Added On</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,7 +80,7 @@ const SensorsList = () => {
                                 <td>
                                     <div className="sen-name">
                                         {getIcon(sensor.category)}
-                                        {sensor.deviceName || sensor.device_name}
+                                        {sensor.device_name}
                                     </div>
                                 </td>
                                 <td>
@@ -69,7 +93,7 @@ const SensorsList = () => {
                                     {sensor.location}
                                 </td>
                                 <td>
-                                    <span className="sen-date">{sensor.createdOn}</span>
+                                    <span className="sen-date">{new Date().toLocaleDateString()}</span>
                                 </td>
                             </tr>
                         ))}

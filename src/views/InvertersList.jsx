@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invertersData } from '../data/mockData';
-import { Search, Server, Activity } from 'lucide-react';
+import apiService from '../services/apiService';
+import { Search, Server, Activity, Loader2 } from 'lucide-react';
 import './InvertersList.css';
 
 const InvertersList = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    const [devices, setDevices] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const filtered = invertersData.filter(inv =>
+    React.useEffect(() => {
+        const fetchDevices = async () => {
+            try {
+                const data = await apiService.getDevices();
+                setDevices(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Device fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchDevices();
+    }, []);
+
+    const filtered = devices.filter(inv =>
         inv.device_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         inv.manufacturer?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -56,7 +72,7 @@ const InvertersList = () => {
                                         ) : (
                                             <Activity size={16} className="inv-name-icon" />
                                         )}
-                                        {device.device_name || device.deviceName}
+                                        {device.device_name}
                                     </div>
                                 </td>
                                 <td>
@@ -65,12 +81,12 @@ const InvertersList = () => {
                                 <td>{device.manufacturer}</td>
                                 <td>
                                     <span className="inv-val highlight">
-                                        {(device.total_gen || device.totalGeneration)?.toFixed(1)} kWh
+                                        {device.total_gen?.toFixed(1) || '0.0'} kWh
                                     </span>
                                 </td>
                                 <td>
                                     <span className="inv-val success">
-                                        {(device.today_gen || device.todayGeneration)?.toFixed(2)} kWh
+                                        {device.today_gen?.toFixed(2) || '0.00'} kWh
                                     </span>
                                 </td>
                                 <td>

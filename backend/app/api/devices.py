@@ -13,11 +13,20 @@ router = APIRouter(prefix="/api/devices", tags=["Devices"])
 
 @router.get("", response_model=list[DeviceSummary])
 async def list_devices(db: AsyncSession = Depends(get_db)):
-    devices = (await db.execute(select(Device))).scalars().all()
+    from app.models.models import Plant
+    query = select(Device, Plant.lat, Plant.lng).join(Plant, Device.plant_id == Plant.id)
+    results = (await db.execute(query)).all()
+    
     return [DeviceSummary(
-        id=d.id, device_name=d.device_name, category=d.category,
-        manufacturer=d.manufacturer, status=d.status, plant_id=d.plant_id
-    ) for d in devices]
+        id=r.Device.id, 
+        device_name=r.Device.device_name, 
+        category=r.Device.category,
+        manufacturer=r.Device.manufacturer, 
+        status=r.Device.status, 
+        plant_id=r.Device.plant_id,
+        lat=r.lat,
+        lng=r.lng
+    ) for r in results]
 
 
 @router.get("/{device_id}", response_model=DeviceSummary)

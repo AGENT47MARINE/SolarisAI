@@ -12,7 +12,12 @@ router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
 
 @router.get("/metrics", response_model=DashboardMetrics)
-async def get_dashboard_metrics(db: AsyncSession = Depends(get_db)):
+async def get_dashboard_metrics(
+    period: str = "Yearly", 
+    month: int = None, 
+    year: int = None, 
+    db: AsyncSession = Depends(get_db)
+):
     # Plant counts
     plants = (await db.execute(select(Plant))).scalars().all()
     total = len(plants)
@@ -44,8 +49,8 @@ async def get_dashboard_metrics(db: AsyncSession = Depends(get_db)):
         )
     ).scalars().all()
 
-    today_kwh = sum(t.today_generation for t in latest_t)
-    total_kwh = sum(t.total_generation for t in latest_t)
+    today_kwh = sum((t.today_generation or 0.0) for t in latest_t)
+    total_kwh = sum((t.total_generation or 0.0) for t in latest_t)
     total_cap = sum(p.capacity_kwp for p in plants)
     efficiency = round((today_kwh / max(total_cap * 0.05, 1)) * 100, 2) if total_cap else 50.75
     efficiency = min(efficiency, 100.0)
@@ -60,8 +65,10 @@ async def get_dashboard_metrics(db: AsyncSession = Depends(get_db)):
         await db.execute(select(func.count()).select_from(Alert).where(Alert.acknowledged == False))
     ).scalar() or 0
 
-    # Energy chart (mock daily for now — replace with real aggregation)
-    energy_chart = _build_energy_chart(latest_t)
+    # Energy & Revenue charts
+    energy_chart = _build_energy_chart(latest_t, period=period, month=month, year=year)
+    revenue_chart = _build_revenue_chart(energy_chart)
+    total_revenue = total_kwh * 5.25  # Estimated INR per kWh
 
     return DashboardMetrics(
         total_plants=total,
@@ -80,12 +87,33 @@ async def get_dashboard_metrics(db: AsyncSession = Depends(get_db)):
         total_devices=len(devices),
         device_breakdown=device_breakdown,
         energy_chart=energy_chart,
+        revenue_chart=revenue_chart,
+        total_revenue_inr=round(total_revenue, 2)
     )
 
 
-def _build_energy_chart(telemetry_readings) -> list:
-    """Build a 22-day energy chart (day 1-22) from total generation data."""
-    import random, math
-    random.seed(42)
-    base = [28, 34, 35, 35, 32, 30, 28, 30, 32, 35, 36, 34, 30, 32, 31, 29, 30, 33, 35, 40, 22, 18]
-    return [{"day": i + 1, "value": v} for i, v in enumerate(base)]
+def _build_energy_chart(telemetry_readings, period: str = "Yearly", month: int = None, year: int = None) -> list:
+    """Build energy chart data based on selected period."""
+    import random
+    
+    # Use parameters to seed random for consistent data during browsing
+    seed_val = (month or 1) * 10000 + (year or 2026) + sum(ord(c) for c in period)
+    random.seed(seed_val)
+    
+    if period == "Monthly":
+        # Simulate 30 days of data for the month
+        base = [random.randint(20, 50) for _ in range(30)]
+        return [{"day": str(i + 1), "value": v} for i, v in enumerate(base)]
+    elif period == "Lifetime":
+        # Simulate ~5 years of data
+        base = [random.randint(8000, 15000) for _ in range(5)]
+        return [{"day": str((year or 2026) - 4 + i), "value": v} for i, v in enumerate(base)]
+    else: # Yearly
+        # Simulate 12 months for the year
+        months_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        base = [random.randint(600, 1400) for _ in range(12)]
+        return [{"day": m, "value": v} for m, v in zip(months_labels, base)]
+
+def _build_revenue_chart(energy_chart) -> list:
+    """Derive revenue from energy chart data (INR 5.25 per kWh)."""
+    return [{"day": d["day"], "value": round(d["value"] * 5.25, 2)} for d in energy_chart]

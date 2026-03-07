@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { plantsData } from '../data/mockData';
+import apiService from '../services/apiService';
 import { Loader2, Search, Filter, LayoutGrid, Map as MapIcon } from 'lucide-react';
 import './PlantsList.css';
 
@@ -77,21 +77,21 @@ const PlantCard = ({ plant, onClick }) => {
             <div className="plant-metrics">
                 <div className="plant-metric">
                     <div className="plant-metric-label">Today</div>
-                    <div className="plant-metric-value highlight">{plant.todayGen} kWh</div>
+                    <div className="plant-metric-value highlight">{plant.today_gen} kWh</div>
                 </div>
                 <div className="plant-metric">
                     <div className="plant-metric-label">Total</div>
-                    <div className="plant-metric-value">{plant.totalGen} kWh</div>
+                    <div className="plant-metric-value">{plant.total_gen.toLocaleString()} kWh</div>
                 </div>
                 <div className="plant-metric">
                     <div className="plant-metric-label">Devices</div>
-                    <div className="plant-metric-value">{plant.devices}</div>
+                    <div className="plant-metric-value">{plant.device_count}</div>
                 </div>
             </div>
 
             <div className="plant-chart-area">
                 <div className="chart-label">Active Power History</div>
-                <MiniLineChart data={plant.chartData} />
+                <MiniLineChart data={plant.chart_data} />
             </div>
         </div>
     );
@@ -104,10 +104,17 @@ const PlantsList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setTimeout(() => {
-            setPlants(plantsData);
-            setLoading(false);
-        }, 400);
+        const fetchPlants = async () => {
+            try {
+                const data = await apiService.getPlants();
+                setPlants(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Plants fetch error:", err);
+                setLoading(false);
+            }
+        };
+        fetchPlants();
     }, []);
 
     const filtered = plants.filter(p =>
